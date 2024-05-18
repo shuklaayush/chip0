@@ -398,7 +398,7 @@ impl<F: PrimeField32> State for StarkState<F> {
         let curr_row = &mut self.trace.cpu.curr_row;
         let next_row = &mut self.trace.cpu.next_row;
         curr_row.stack[self.state.stack_pointer as usize] =
-            F::from_canonical_u16(self.state.program_counter());
+            F::from_canonical_u16(self.state.program_counter);
         curr_row.stack_pointer += F::one();
         // TODO: Move this to a helper function
         for i in 0..STACK_DEPTH {

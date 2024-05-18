@@ -107,7 +107,31 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
         // program counter
         builder
             .when_transition()
-            .when(local.is_clear_display)
+            .when(
+                local.is_clear_display
+                    + local.is_load
+                    + local.is_move
+                    + local.is_or
+                    + local.is_and
+                    + local.is_xor
+                    + local.is_add_xy
+                    + local.is_sub_xy
+                    + local.is_shift_right
+                    + local.is_sub_yx
+                    + local.is_shift_left
+                    + local.is_load_i
+                    + local.is_random
+                    + local.is_draw
+                    + local.is_load_delay
+                    + local.is_wait_key_press
+                    + local.is_set_delay
+                    + local.is_set_sound
+                    + local.is_add_i
+                    + local.is_load_font
+                    + local.is_store_bcd
+                    + local.is_store_registers
+                    + local.is_load_memory,
+            )
             .assert_eq(
                 next.program_counter,
                 local.program_counter + AB::Expr::from_canonical_u16(OPCODE_SIZE),
@@ -130,6 +154,12 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
             .when(next.is_real) // TODO: check if this is necessary
             .when(local.is_jump + local.is_call)
             .assert_eq(next.program_counter, local.nnn);
+
+        builder
+            .when_transition()
+            .when(next.is_real) // TODO: check if this is necessary
+            .when(local.is_jump_v0)
+            .assert_eq(next.program_counter, local.registers[0] + local.nnn);
 
         let vx = local
             .x_sel

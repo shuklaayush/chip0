@@ -18,7 +18,7 @@ use std::{
 
 use crate::{prover::Prover, trace::StarkState};
 
-pub const TICKS_PER_PROOF: u64 = 61;
+pub const TICKS_PER_PROOF: u64 = 10000;
 
 pub struct StarkCpu<R, SC, P>
 where
