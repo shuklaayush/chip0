@@ -10,7 +10,7 @@ use p3_derive::Headers;
 #[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct RangeCols<T> {
-    pub counter: T,
+    pub value: T,
     pub mult: T,
 }
 

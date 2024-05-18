@@ -8,8 +8,6 @@ use crate::trace::PartialMachineTrace;
 
 use super::machine::Chip0Machine;
 
-const FREQUENCY: u64 = 60;
-
 #[derive(Clone)]
 pub struct DefaultProver<SC>
 where

@@ -16,7 +16,8 @@ pub struct FrameBufferCols<T> {
     pub is_read: T,
     pub is_write: T,
     pub addr_unchanged: T,
-    pub diff: T,
+    pub diff_limb_lo: T,
+    pub diff_limb_hi: T,
     pub is_first_read: T,
     pub is_last_write: T,
 }

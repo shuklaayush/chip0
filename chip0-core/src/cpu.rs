@@ -1,5 +1,5 @@
 use chip8_core::{
-    constants::{NUM_REGISTERS, TICKS_PER_TIMER},
+    constants::{DISPLAY_HEIGHT, DISPLAY_WIDTH, NUM_REGISTERS, TICKS_PER_TIMER},
     cpu::Cpu,
     error::Chip8Error,
     input::{InputEvent, InputQueue},
@@ -18,7 +18,7 @@ use std::{
 
 use crate::{prover::Prover, trace::StarkState};
 
-pub const TICKS_PER_PROOF: u64 = 5;
+pub const TICKS_PER_PROOF: u64 = 1000;
 
 pub struct StarkCpu<R, SC, P>
 where
@@ -70,6 +70,47 @@ where
 
     fn frequency(&self) -> u64 {
         self.clk_freq
+    }
+
+    fn op_draw(&mut self, x: Word, y: Word, n: Word) -> Result<(), Chip8Error> {
+        // let curr_row = &mut self.state().trace.draw.curr_row;
+        // pub is_real: T,
+        // pub clk: T,
+        // pub register_x: T,
+        // pub register_y: T,
+        // pub index_register: T,
+        // pub ys: T,
+        // pub y: T,
+        // pub pixels: T,
+        // pub xs: T,
+        // pub x: T,
+        // pub pixel: T,
+        // pub frame_buffer_y_x: T,
+        // pub flipped: T,
+        // pub register_flag: T,
+
+        let vx = self.state().register(x);
+        let vy = self.state().register(y);
+        let vi = self.state().index_register();
+
+        let x0 = vx as usize % DISPLAY_WIDTH;
+        let y0 = vy as usize % DISPLAY_HEIGHT;
+        let mut flipped = false;
+        for ys in 0..n {
+            let y = (y0 + ys as usize) % DISPLAY_HEIGHT;
+            let pixels = self.state().memory(vi + ys as u16)?;
+            for xs in 0..8 {
+                let x = (x0 + xs) % DISPLAY_WIDTH;
+                let pixel = (pixels >> (7 - xs)) & 1 == 1;
+                let fb = self.state().frame_buffer(y, x)?;
+                flipped |= pixel & fb;
+                if pixel {
+                    self.state().set_frame_buffer(y, x, !fb)?;
+                }
+            }
+        }
+        self.state().set_flag_register(flipped);
+        Ok(())
     }
 
     fn fetch(&mut self) -> Result<u16, Chip8Error> {

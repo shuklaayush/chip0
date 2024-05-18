@@ -7,15 +7,22 @@ use chip8_core::{
 };
 use core::mem::size_of;
 use core::slice;
+use itertools::Itertools;
 use p3_derive::AlignedBorrow;
 use p3_field::PrimeField32;
 use p3_matrix::dense::RowMajorMatrix;
-use std::sync::{Arc, RwLock};
+use std::{
+    collections::BTreeMap,
+    sync::{Arc, RwLock},
+};
 
 use crate::chips::{
     cpu::columns::{CpuCols, NUM_CPU_COLS},
     draw::columns::{DrawCols, NUM_DRAW_COLS},
+    frame_buffer::columns::NUM_FRAME_BUFFER_COLS,
     keypad::columns::{KeypadCols, NUM_KEYPAD_COLS},
+    memory::columns::{MemoryCols, NUM_MEMORY_COLS},
+    range::columns::{RangeCols, NUM_RANGE_COLS},
 };
 
 #[derive(Default, Clone)]
@@ -47,22 +54,104 @@ pub struct PartialMachineTrace<F: PrimeField32> {
 }
 
 impl<F: PrimeField32> PartialMachineTrace<F> {
-    pub fn get_trace_matrices(&self) -> Vec<Option<RowMajorMatrix<F>>> {
+    pub fn get_trace_matrices(mut self) -> Vec<Option<RowMajorMatrix<F>>> {
+        let mut range_counts = BTreeMap::new();
+
+        self.memory.sort_by_key(|event| event.address);
+        let mut memory_trace = vec![MemoryCols::default(); self.memory.len()];
+        for (i, event) in self.memory.iter().enumerate() {
+            memory_trace[i].addr = event.address;
+            memory_trace[i].clk = event.clk;
+            memory_trace[i].value = event.value;
+
+            memory_trace[i].is_read = event.is_read;
+            memory_trace[i].is_write = F::one() - event.is_read;
+
+            if i > 0 {
+                let diff = if memory_trace[i].addr == memory_trace[i - 1].addr {
+                    memory_trace[i].addr_unchanged = F::one();
+                    memory_trace[i].clk - memory_trace[i - 1].clk
+                } else {
+                    memory_trace[i].addr - memory_trace[i - 1].addr - F::one()
+                };
+
+                let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
+                let diff_limb_hi =
+                    F::from_canonical_u32((diff.as_canonical_u32() >> 16) % (1 << 8));
+
+                memory_trace[i].diff_limb_lo = diff_limb_lo;
+                memory_trace[i].diff_limb_hi = diff_limb_hi;
+
+                range_counts
+                    .entry(diff_limb_lo)
+                    .and_modify(|count| *count += F::one())
+                    .or_insert(F::one());
+                range_counts
+                    .entry(diff_limb_hi)
+                    .and_modify(|count| *count += F::one())
+                    .or_insert(F::one());
+            }
+        }
+
+        self.frame_buffer.sort_by_key(|event| event.address);
+        let mut frame_buffer_trace = vec![MemoryCols::default(); self.frame_buffer.len()];
+        for (i, event) in self.frame_buffer.iter().enumerate() {
+            frame_buffer_trace[i].addr = event.address;
+            frame_buffer_trace[i].clk = event.clk;
+            frame_buffer_trace[i].value = event.value;
+
+            frame_buffer_trace[i].is_read = event.is_read;
+            frame_buffer_trace[i].is_write = F::one() - event.is_read;
+
+            if i > 0 {
+                let diff = if frame_buffer_trace[i].addr == frame_buffer_trace[i - 1].addr {
+                    frame_buffer_trace[i].addr_unchanged = F::one();
+                    frame_buffer_trace[i].clk - frame_buffer_trace[i - 1].clk
+                } else {
+                    frame_buffer_trace[i].addr - frame_buffer_trace[i - 1].addr - F::one()
+                };
+                let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
+                let diff_limb_hi =
+                    F::from_canonical_u32((diff.as_canonical_u32() >> 16) % (1 << 8));
+
+                frame_buffer_trace[i].diff_limb_lo = diff_limb_lo;
+                frame_buffer_trace[i].diff_limb_hi = diff_limb_hi;
+
+                range_counts
+                    .entry(diff_limb_lo)
+                    .and_modify(|count| *count += F::one())
+                    .or_insert(F::one());
+                range_counts
+                    .entry(diff_limb_hi)
+                    .and_modify(|count| *count += F::one())
+                    .or_insert(F::one());
+            }
+        }
+
+        let range_trace = (0..256)
+            .map(|n| {
+                let n = F::from_canonical_u32(n);
+                RangeCols {
+                    value: n,
+                    mult: *range_counts.get(&n).unwrap_or(&F::zero()),
+                }
+            })
+            .collect_vec();
+
         let cpu_matrix = Some(self.cpu.to_trace_matrix(NUM_CPU_COLS));
         let draw_matrix = Some(self.draw.to_trace_matrix(NUM_DRAW_COLS));
         let keypad_matrix = Some(self.keypad.to_trace_matrix(NUM_KEYPAD_COLS));
-
-        let range_matrix = None;
-        let memory_matrix = None;
-        let frame_buffer_matrix = None;
+        let memory_matrix = Some(memory_trace.to_trace_matrix(NUM_MEMORY_COLS));
+        let frame_buffer_matrix = Some(frame_buffer_trace.to_trace_matrix(NUM_FRAME_BUFFER_COLS));
+        let range_matrix = Some(range_trace.to_trace_matrix(NUM_RANGE_COLS));
 
         vec![
             cpu_matrix,
             draw_matrix,
             keypad_matrix,
-            range_matrix,
             memory_matrix,
             frame_buffer_matrix,
+            range_matrix,
         ]
     }
 }
