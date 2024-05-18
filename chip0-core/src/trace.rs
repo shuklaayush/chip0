@@ -138,12 +138,12 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             })
             .collect_vec();
 
-        let cpu_matrix = Some(self.cpu.to_trace_matrix(NUM_CPU_COLS));
-        let draw_matrix = Some(self.draw.to_trace_matrix(NUM_DRAW_COLS));
-        let keypad_matrix = Some(self.keypad.to_trace_matrix(NUM_KEYPAD_COLS));
-        let memory_matrix = Some(memory_trace.to_trace_matrix(NUM_MEMORY_COLS));
-        let frame_buffer_matrix = Some(frame_buffer_trace.to_trace_matrix(NUM_FRAME_BUFFER_COLS));
-        let range_matrix = Some(range_trace.to_trace_matrix(NUM_RANGE_COLS));
+        let cpu_matrix = self.cpu.to_trace_matrix(NUM_CPU_COLS);
+        let draw_matrix = self.draw.to_trace_matrix(NUM_DRAW_COLS);
+        let keypad_matrix = self.keypad.to_trace_matrix(NUM_KEYPAD_COLS);
+        let memory_matrix = memory_trace.to_trace_matrix(NUM_MEMORY_COLS);
+        let frame_buffer_matrix = frame_buffer_trace.to_trace_matrix(NUM_FRAME_BUFFER_COLS);
+        let range_matrix = range_trace.to_trace_matrix(NUM_RANGE_COLS);
 
         vec![
             cpu_matrix,
@@ -447,16 +447,15 @@ impl<F: PrimeField32> State for StarkState<F> {
 impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
     pub fn add_curr_row_to_trace(&mut self) {
         self.trace.push(self.curr_row);
-        self.curr_row = self.next_row;
-
-        self.next_row = CpuCols::default();
-        // TODO: Probably wrong
         // Copy state
         self.next_row.registers = self.curr_row.registers;
         self.next_row.index_register = self.curr_row.index_register;
         self.next_row.stack = self.curr_row.stack;
         self.next_row.stack_pointer = self.curr_row.stack_pointer;
         self.next_row.keypad = self.curr_row.keypad;
+
+        self.curr_row = self.next_row;
+        self.next_row = CpuCols::default();
     }
 }
 
@@ -472,26 +471,36 @@ impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
 impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
     pub fn add_curr_row_to_trace(&mut self) {
         self.trace.push(self.curr_row);
-        self.curr_row = self.next_row;
+        // Copy state
+        self.next_row.is_real = self.curr_row.is_real;
+        self.next_row.clk = self.curr_row.clk;
+        self.next_row.register_x = self.curr_row.register_x;
+        self.next_row.register_y = self.curr_row.register_y;
+        self.next_row.index_register = self.curr_row.index_register;
 
+        self.curr_row = self.next_row;
         self.next_row = DrawCols::default();
     }
 }
 
 pub trait ToTraceMatrix<F: PrimeField32> {
-    fn to_trace_matrix(&self, num_cols: usize) -> RowMajorMatrix<F>;
+    fn to_trace_matrix(&self, num_cols: usize) -> Option<RowMajorMatrix<F>>;
 }
 
 impl<F: PrimeField32, Cols: Default + Clone> ToTraceMatrix<F> for Vec<Cols> {
     // TODO: Calculate num_cols from struct
-    fn to_trace_matrix(&self, num_cols: usize) -> RowMajorMatrix<F> {
-        let mut trace = self.clone();
-        let next_power_of_two = trace.len().next_power_of_two();
-        trace.resize(next_power_of_two, Cols::default());
+    fn to_trace_matrix(&self, num_cols: usize) -> Option<RowMajorMatrix<F>> {
+        if self.is_empty() {
+            None
+        } else {
+            let mut trace = self.clone();
+            let next_power_of_two = trace.len().next_power_of_two();
+            trace.resize(next_power_of_two, Cols::default());
 
-        let ptr = trace.as_ptr() as *const F;
-        let len = trace.len() * num_cols;
-        let values = unsafe { slice::from_raw_parts(ptr, len) };
-        RowMajorMatrix::new(values.to_vec(), num_cols)
+            let ptr = trace.as_ptr() as *const F;
+            let len = trace.len() * num_cols;
+            let values = unsafe { slice::from_raw_parts(ptr, len) };
+            Some(RowMajorMatrix::new(values.to_vec(), num_cols))
+        }
     }
 }

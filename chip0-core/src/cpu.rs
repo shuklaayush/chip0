@@ -73,21 +73,7 @@ where
     }
 
     fn op_draw(&mut self, x: Word, y: Word, n: Word) -> Result<(), Chip8Error> {
-        // let curr_row = &mut self.state().trace.draw.curr_row;
-        // pub is_real: T,
-        // pub clk: T,
-        // pub register_x: T,
-        // pub register_y: T,
-        // pub index_register: T,
-        // pub ys: T,
-        // pub y: T,
-        // pub pixels: T,
-        // pub xs: T,
-        // pub x: T,
-        // pub pixel: T,
-        // pub frame_buffer_y_x: T,
-        // pub flipped: T,
-        // pub register_flag: T,
+        let clk = self.state().clk()?;
 
         let vx = self.state().register(x);
         let vy = self.state().register(y);
@@ -96,17 +82,40 @@ where
         let x0 = vx as usize % DISPLAY_WIDTH;
         let y0 = vy as usize % DISPLAY_HEIGHT;
         let mut flipped = false;
+
+        // Each row in loop
+        let curr_row = &mut self.state().trace.draw.curr_row;
+        curr_row.is_real = Val::<SC>::one();
+        curr_row.clk = Val::<SC>::from_canonical_u64(clk);
+        curr_row.register_x = Val::<SC>::from_canonical_u8(vx);
+        curr_row.register_y = Val::<SC>::from_canonical_u8(vy);
+        curr_row.index_register = Val::<SC>::from_canonical_u16(vi);
+
         for ys in 0..n {
             let y = (y0 + ys as usize) % DISPLAY_HEIGHT;
             let pixels = self.state().memory(vi + ys as u16)?;
-            for xs in 0..8 {
-                let x = (x0 + xs) % DISPLAY_WIDTH;
+            for xs in 0..8u8 {
+                let x = (x0 + xs as usize) % DISPLAY_WIDTH;
                 let pixel = (pixels >> (7 - xs)) & 1 == 1;
                 let fb = self.state().frame_buffer(y, x)?;
-                flipped |= pixel & fb;
+                let curr_flipped = pixel & fb;
+                flipped |= curr_flipped;
                 if pixel {
                     self.state().set_frame_buffer(y, x, !fb)?;
                 }
+
+                let curr_row = &mut self.state().trace.draw.curr_row;
+                curr_row.ys = Val::<SC>::from_canonical_u8(ys);
+                curr_row.y = Val::<SC>::from_canonical_usize(y);
+                curr_row.pixels = Val::<SC>::from_canonical_u8(pixels);
+                curr_row.xs = Val::<SC>::from_canonical_u8(xs);
+                curr_row.x = Val::<SC>::from_canonical_usize(x);
+                curr_row.pixel = Val::<SC>::from_bool(pixel);
+                curr_row.frame_buffer_y_x = Val::<SC>::from_bool(fb);
+                curr_row.flipped = Val::<SC>::from_bool(curr_flipped);
+                curr_row.register_flag = Val::<SC>::from_bool(flipped);
+
+                self.state().trace.draw.add_curr_row_to_trace();
             }
         }
         self.state().set_flag_register(flipped);
