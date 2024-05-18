@@ -33,6 +33,9 @@ pub struct StarkState<F: PrimeField32> {
     // pub range_trace: IncrementalTrace<RangeCols<F>>,
     // pub memory_trace: RowMajorMatrix<F>,
     // pub frame_buffer_trace: RowMajorMatrix<F>,
+
+    // TODO: Change to running hash
+    // pub inputs: Vec<(u64, InputKind)>,
 }
 
 impl<F: PrimeField32> Default for StarkState<F> {

@@ -1,5 +1,5 @@
 [workspace]
-members = ["chip0-core", "chip0-tui"]
+members = ["chip0-core", "chip0-tui", "chip8-core"]
 resolver = "2"
 
 [workspace.dependencies]
@@ -31,13 +31,12 @@ p3-machine = { git = "https://github.com/shuklaayush/p3-test.git", features = [
     "debug-trace",
 ] }
 
-chip8-core = { git = "https://github.com/shuklaayush/chip8-rs.git" }
-
 serde = { version = "1.0", default-features = false, features = [
     "derive",
     "alloc",
 ] }
 tracing = { version = "0.1.37" }
+rand = { version = "0.8.5" }
 
 # [patch."https://github.com/Plonky3/Plonky3"]
 [patch."https://github.com/shuklaayush/Plonky3"]

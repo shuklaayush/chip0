@@ -193,6 +193,7 @@ dependencies = [
  "rust_xlsxwriter",
  "serde",
  "tiny-keccak",
+ "tokio",
  "tracing",
  "tracing-forest",
  "tracing-subscriber",
@@ -209,6 +210,8 @@ dependencies = [
  "csv",
  "eyre",
  "p3-baby-bear",
+ "p3-machine",
+ "p3-uni-stark",
  "rand",
  "ratatui",
  "serde",
@@ -219,6 +222,9 @@ dependencies = [
 name = "chip8-core"
 version = "0.1.0"
 dependencies = [
+ "p3-field",
+ "p3-matrix",
+ "p3-uni-stark",
  "rand",
  "thiserror",
  "tokio",
@@ -1585,3 +1591,7 @@ dependencies = [
  "crossbeam-utils",
  "flate2",
 ]
+
+[[patch.unused]]
+name = "chip8-core"
+version = "0.1.0"

@@ -11,9 +11,10 @@ use chip8_core::{
 };
 use clap::Parser;
 use csv::{Reader, Writer, WriterBuilder};
-use drivers::input::CsvRecord;
+use drivers::{input::CsvRecord, prover::DefaultProverDriver};
 use eyre::Result;
 use p3_baby_bear::BabyBear;
+use p3_machine::config::MyConfig;
 use rand::{random, rngs::StdRng, SeedableRng};
 use std::fs::{self, OpenOptions};
 use terminal::{restore_terminal, setup_terminal};
@@ -78,12 +79,20 @@ async fn main() -> Result<()> {
             None
         }
     };
+    // let prover_driver = Some(DefaultProverDriver::new());
+    let prover_driver: Option<DefaultProverDriver> = None;
 
     let seeded_rng = StdRng::seed_from_u64(args.random_seed.unwrap_or(random()));
-    let cpu: StarkCpu<_, BabyBear> = StarkCpu::new(args.clk_freq, seeded_rng);
+    let cpu: StarkCpu<_, MyConfig> = StarkCpu::new(args.clk_freq, seeded_rng);
     let mut chip8 = Chip8::new(cpu, inputs);
     let res = chip8
-        .load_and_run(rom.as_slice(), input_driver, display_driver, audio_driver)
+        .load_and_run(
+            rom.as_slice(),
+            input_driver,
+            display_driver,
+            audio_driver,
+            prover_driver,
+        )
         .await;
 
     restore_terminal(args.headless)?;
