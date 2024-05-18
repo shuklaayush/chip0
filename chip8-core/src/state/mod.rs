@@ -20,13 +20,13 @@ pub trait State: Default {
     fn program_counter(&self) -> Address;
     fn delay_timer(&self) -> Word;
     fn sound_timer(&self) -> Result<Word, Chip8Error>;
-    fn memory(&self, addr: Address) -> Result<Word, Chip8Error>;
+    fn memory(&mut self, addr: Address) -> Result<Word, Chip8Error>;
     fn register(&self, index: Word) -> Word;
     fn index_register(&self) -> Address;
     fn key(&self, index: Word) -> bool;
-    fn frame_buffer(&self, y: usize, x: usize) -> Result<bool, Chip8Error>;
+    fn frame_buffer(&mut self, y: usize, x: usize) -> Result<bool, Chip8Error>;
 
-    fn set_frame_buffer(&self, y: usize, x: usize, bit: bool) -> Result<(), Chip8Error>;
+    fn set_frame_buffer(&mut self, y: usize, x: usize, bit: bool) -> Result<(), Chip8Error>;
     fn set_program_counter(&mut self, pc: Address);
     fn set_delay_timer(&mut self, value: Word);
     fn set_sound_timer(&mut self, value: Word) -> Result<(), Chip8Error>;

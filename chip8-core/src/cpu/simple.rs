@@ -1,4 +1,3 @@
-use p3_uni_stark::StarkGenericConfig;
 use rand::Rng;
 
 use super::Cpu;
@@ -21,7 +20,7 @@ impl<R: Rng> SimpleCpu<R> {
     }
 }
 
-impl<R: Rng, SC: StarkGenericConfig> Cpu<SC> for SimpleCpu<R> {
+impl<R: Rng> Cpu for SimpleCpu<R> {
     type State = SimpleState;
 
     fn state(&mut self) -> &mut Self::State {

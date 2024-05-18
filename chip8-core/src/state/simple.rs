@@ -95,7 +95,7 @@ impl State for SimpleState {
         Ok(st)
     }
 
-    fn memory(&self, addr: Address) -> Result<Word, Chip8Error> {
+    fn memory(&mut self, addr: Address) -> Result<Word, Chip8Error> {
         if (addr as usize) < MEMORY_SIZE {
             Ok(self.memory[addr as usize])
         } else {
@@ -115,12 +115,12 @@ impl State for SimpleState {
         self.keypad[index as usize]
     }
 
-    fn frame_buffer(&self, y: usize, x: usize) -> Result<bool, Chip8Error> {
+    fn frame_buffer(&mut self, y: usize, x: usize) -> Result<bool, Chip8Error> {
         let fb = ((*self.frame_buffer).checked_read()?)[y][x];
         Ok(fb)
     }
 
-    fn set_frame_buffer(&self, y: usize, x: usize, bit: bool) -> Result<(), Chip8Error> {
+    fn set_frame_buffer(&mut self, y: usize, x: usize, bit: bool) -> Result<(), Chip8Error> {
         ((*self.frame_buffer).checked_write()?)[y][x] = bit;
         Ok(())
     }

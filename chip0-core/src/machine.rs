@@ -7,7 +7,7 @@ use crate::chips::{
     memory::MemoryChip, range::RangeChip, Chip0MachineChip,
 };
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Chip0Machine {}
 
 pub enum Chip0MachineBus {}
@@ -21,17 +21,17 @@ where
         let cpu_chip = CpuChip {};
         let draw_chip = DrawChip {};
         let keypad_chip = KeypadChip {};
-        let range_chip = RangeChip {};
         let memory_chip = MemoryChip {};
         let frame_buffer_chip = FrameBufferChip {};
+        let range_chip = RangeChip {};
 
         vec![
             Chip0MachineChip::Cpu(cpu_chip),
             Chip0MachineChip::Draw(draw_chip),
             Chip0MachineChip::Keypad(keypad_chip),
-            Chip0MachineChip::Range(range_chip),
             Chip0MachineChip::Memory(memory_chip),
             Chip0MachineChip::FrameBuffer(frame_buffer_chip),
+            Chip0MachineChip::Range(range_chip),
         ]
     }
 }

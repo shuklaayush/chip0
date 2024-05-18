@@ -1,7 +1,6 @@
 use chip8_core::{
     constants::{NUM_REGISTERS, TICKS_PER_TIMER},
     cpu::Cpu,
-    drivers::ProofRequest,
     error::Chip8Error,
     input::{InputEvent, InputQueue},
     instruction::Instruction,
@@ -17,41 +16,47 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use crate::trace::StarkState;
+use crate::{prover::Prover, trace::StarkState};
 
 pub const TICKS_PER_PROOF: u64 = 5;
 
-pub struct StarkCpu<R, SC>
+pub struct StarkCpu<R, SC, P>
 where
     R: Rng,
     SC: StarkGenericConfig,
     Val<SC>: PrimeField32,
+    P: Prover<SC> + Send + Sync + 'static,
 {
     state: StarkState<Val<SC>>,
     clk_freq: u64,
     rng: R,
+
+    prover: Arc<P>,
 }
 
-impl<R, SC> StarkCpu<R, SC>
+impl<R, SC, P> StarkCpu<R, SC, P>
 where
     R: Rng,
     SC: StarkGenericConfig,
     Val<SC>: PrimeField32,
+    P: Prover<SC> + Send + Sync + 'static,
 {
-    pub fn new(clk_freq: u64, rng: R) -> Self {
+    pub fn new(clk_freq: u64, rng: R, prover: P) -> Self {
         Self {
             state: StarkState::default(),
             clk_freq,
             rng,
+            prover: Arc::new(prover),
         }
     }
 }
 
-impl<R, SC> Cpu<SC> for StarkCpu<R, SC>
+impl<R, SC, P> Cpu for StarkCpu<R, SC, P>
 where
     R: Rng,
     SC: StarkGenericConfig,
     Val<SC>: PrimeField32,
+    P: Prover<SC> + Send + Sync + 'static,
 {
     type State = StarkState<Val<SC>>;
 
@@ -75,14 +80,14 @@ where
         self.state().increment_program_counter();
         let opcode = u16::from_be_bytes([hi, lo]);
 
-        let curr_row = &mut self.state().cpu_trace.curr_row;
+        let curr_row = &mut self.state().trace.cpu.curr_row;
         curr_row.opcode = Val::<SC>::from_canonical_u16(opcode);
 
         Ok(opcode)
     }
 
     fn decode(&mut self, opcode: u16) -> Result<Instruction, Chip8Error> {
-        let curr_row = &mut self.state().cpu_trace.curr_row;
+        let curr_row = &mut self.state().trace.cpu.curr_row;
 
         let x = ((opcode >> 8) & 0x000F) as u8;
         let y = ((opcode >> 4) & 0x000F) as u8;
@@ -298,16 +303,16 @@ where
         }
     }
 
-    fn run(
+    async fn run(
         &mut self,
         status: Arc<RwLock<Result<(), Chip8Error>>>,
         input_queue: Arc<RwLock<VecDeque<(u64, InputEvent)>>>,
-        proving_queue: Arc<RwLock<VecDeque<ProofRequest<Val<SC>>>>>,
     ) {
+        // let mut prover_handle = None;
         run_loop(status.clone(), self.frequency(), move |_| {
             let clk = self.state().clk()?;
 
-            let curr_row = &mut self.state().cpu_trace.curr_row;
+            let curr_row = &mut self.state().trace.cpu.curr_row;
             if clk == 0 {
                 curr_row.is_first = Val::<SC>::one();
             }
@@ -326,16 +331,19 @@ where
 
             if (clk + 1) % TICKS_PER_PROOF == 0 {
                 // TODO: Generate trace in other thread
-                let request = ProofRequest {
-                    traces: self.state.get_trace_matrices(),
-                    // TODO
-                    public_values: vec![],
-                };
-                proving_queue.checked_write()?.push_back(request);
+                let trace = self.state.finalize_trace();
+                let prover = self.prover.clone();
+                tokio::spawn(async move { prover.prove(trace) });
+
                 self.op_wait_key_press(status.clone(), input_queue.clone(), 0)?;
             }
 
             Ok(())
         });
+        // if let Some(prover_handle) = prover_handle {
+        //     prover_handle
+        //         .await
+        //         .map_err(|e| Chip8Error::AsyncAwaitError(e.to_string()));
+        // }
     }
 }

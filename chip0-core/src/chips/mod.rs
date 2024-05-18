@@ -19,7 +19,7 @@ pub enum Chip0MachineChip {
     Cpu(CpuChip),
     Draw(DrawChip),
     Keypad(KeypadChip),
-    Range(RangeChip),
     Memory(MemoryChip),
     FrameBuffer(FrameBufferChip),
+    Range(RangeChip),
 }

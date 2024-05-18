@@ -4,12 +4,10 @@ use std::{
 };
 
 mod simple;
-use p3_uni_stark::{StarkGenericConfig, Val};
 pub use simple::SimpleCpu;
 
 use crate::{
     constants::{DISPLAY_HEIGHT, DISPLAY_WIDTH, FONTSET_START_ADDRESS, FONT_SIZE, TICKS_PER_TIMER},
-    drivers::ProofRequest,
     error::Chip8Error,
     input::{InputEvent, InputQueue},
     instruction::Instruction,
@@ -18,7 +16,7 @@ use crate::{
     util::run_loop,
 };
 
-pub trait Cpu<SC: StarkGenericConfig> {
+pub trait Cpu {
     type State: State;
 
     fn state(&mut self) -> &mut Self::State;
@@ -526,11 +524,10 @@ pub trait Cpu<SC: StarkGenericConfig> {
         Ok(())
     }
 
-    fn run(
+    async fn run(
         &mut self,
         status: Arc<RwLock<Result<(), Chip8Error>>>,
         input_queue: Arc<RwLock<VecDeque<(u64, InputEvent)>>>,
-        proving_queue: Arc<RwLock<VecDeque<ProofRequest<Val<SC>>>>>,
     ) {
         run_loop(status.clone(), self.frequency(), move |_| {
             let clk = self.state().clk()?;

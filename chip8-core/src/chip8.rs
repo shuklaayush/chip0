@@ -3,41 +3,31 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use crate::drivers::ProofRequest;
-
 use super::{
     cpu::Cpu,
-    drivers::{AudioDriver, DisplayDriver, InputDriver, ProverDriver},
+    drivers::{AudioDriver, DisplayDriver, InputDriver},
     error::Chip8Error,
     input::InputEvent,
     rwlock::CheckedRead,
     state::State,
 };
-use p3_field::PrimeField32;
-use p3_uni_stark::{StarkGenericConfig, Val};
 
-pub struct Chip8<C, SC>
+pub struct Chip8<C>
 where
-    C: Cpu<SC>,
-    SC: StarkGenericConfig,
-    Val<SC>: PrimeField32,
+    C: Cpu,
 {
     cpu: C,
     input_queue: Arc<RwLock<VecDeque<(u64, InputEvent)>>>,
-    proving_queue: Arc<RwLock<VecDeque<ProofRequest<Val<SC>>>>>,
 }
 
-impl<C, SC> Chip8<C, SC>
+impl<C> Chip8<C>
 where
-    C: Cpu<SC>,
-    SC: StarkGenericConfig,
-    Val<SC>: PrimeField32,
+    C: Cpu,
 {
     pub fn new(cpu: C, inputs: Vec<(u64, InputEvent)>) -> Self {
         Self {
             cpu,
             input_queue: Arc::new(RwLock::new(VecDeque::from(inputs))),
-            proving_queue: Arc::new(RwLock::new(VecDeque::new())),
         }
     }
 
@@ -50,7 +40,6 @@ where
         mut input: impl InputDriver + 'static,
         display: Option<impl DisplayDriver + 'static>,
         audio: Option<impl AudioDriver + 'static>,
-        prover: Option<impl ProverDriver<SC> + 'static>,
     ) -> Result<(), Chip8Error> {
         // Status flag to check if machine is still running
         let status = Arc::new(RwLock::new(Ok(())));
@@ -82,23 +71,9 @@ where
                 tokio::spawn(async move { audio.run(status, sound_timer) })
             })
         };
-        // Prover loop
-        let prover_handle = {
-            prover.map(|mut prover| {
-                let status = status.clone();
-                let queue = self.proving_queue.clone();
-                let clk = self.cpu.state().clk_ptr();
-
-                tokio::spawn(async move { prover.run(status, queue) })
-            })
-        };
 
         // CPU loop
-        self.cpu.run(
-            status.clone(),
-            self.input_queue.clone(),
-            self.proving_queue.clone(),
-        );
+        self.cpu.run(status.clone(), self.input_queue.clone()).await;
 
         // Wait for all threads
         input_handle
@@ -114,11 +89,6 @@ where
                 .await
                 .map_err(|e| Chip8Error::AsyncAwaitError(e.to_string()))?;
         }
-        if let Some(prover_handle) = prover_handle {
-            prover_handle
-                .await
-                .map_err(|e| Chip8Error::AsyncAwaitError(e.to_string()))?;
-        }
 
         let res = status.checked_read()?;
         res.clone()
@@ -130,9 +100,8 @@ where
         input: impl InputDriver + 'static,
         display: Option<impl DisplayDriver + 'static>,
         audio: Option<impl AudioDriver + 'static>,
-        prover: Option<impl ProverDriver<SC> + 'static>,
     ) -> Result<(), Chip8Error> {
         self.load(rom)?;
-        self.run(input, display, audio, prover).await
+        self.run(input, display, audio).await
     }
 }

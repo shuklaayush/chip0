@@ -5,7 +5,9 @@ use chip8_core::{
     keypad::Key,
     state::{Address, SimpleState, State, Word},
 };
+use core::mem::size_of;
 use core::slice;
+use p3_derive::AlignedBorrow;
 use p3_field::PrimeField32;
 use p3_matrix::dense::RowMajorMatrix;
 use std::sync::{Arc, RwLock};
@@ -16,48 +18,39 @@ use crate::chips::{
     keypad::columns::{KeypadCols, NUM_KEYPAD_COLS},
 };
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct IncrementalTrace<Cols: Default> {
     pub trace: Vec<Cols>,
     pub curr_row: Cols,
     pub next_row: Cols,
 }
 
-// TODO: Derive simple state from traces
-pub struct StarkState<F: PrimeField32> {
-    pub simple_state: SimpleState,
+#[repr(C)]
+#[derive(AlignedBorrow, Default, Copy, Clone)]
+pub struct MemoryEventLike<T> {
+    pub clk: T,
+    pub address: T,
+    pub value: T,
+    pub is_read: T,
+}
 
-    pub cpu_trace: IncrementalTrace<CpuCols<F>>,
-    pub draw_trace: IncrementalTrace<DrawCols<F>>,
-    pub keypad_trace: IncrementalTrace<KeypadCols<F>>,
-    // pub range_trace: IncrementalTrace<RangeCols<F>>,
-    // pub memory_trace: RowMajorMatrix<F>,
-    // pub frame_buffer_trace: RowMajorMatrix<F>,
-
+#[derive(Clone)]
+pub struct PartialMachineTrace<F: PrimeField32> {
+    pub cpu: Vec<CpuCols<F>>,
+    pub draw: Vec<DrawCols<F>>,
+    pub keypad: Vec<KeypadCols<F>>,
+    // range_trace: Vec::default(),
+    pub memory: Vec<MemoryEventLike<F>>,
+    pub frame_buffer: Vec<MemoryEventLike<F>>,
     // TODO: Change to running hash
     // pub inputs: Vec<(u64, InputKind)>,
 }
 
-impl<F: PrimeField32> Default for StarkState<F> {
-    fn default() -> Self {
-        let mut cpu_trace: IncrementalTrace<CpuCols<F>> = IncrementalTrace::default();
-        cpu_trace.curr_row.program_counter = F::from_canonical_u16(PROGRAM_START_ADDRESS);
-
-        Self {
-            simple_state: SimpleState::default(),
-            cpu_trace,
-            draw_trace: IncrementalTrace::default(),
-            keypad_trace: IncrementalTrace::default(),
-            // range_trace: IncrementalTrace::default(),
-        }
-    }
-}
-
-impl<F: PrimeField32> StarkState<F> {
+impl<F: PrimeField32> PartialMachineTrace<F> {
     pub fn get_trace_matrices(&self) -> Vec<Option<RowMajorMatrix<F>>> {
-        let cpu_matrix = Some(self.cpu_trace.get_trace_matrix());
-        let draw_matrix = Some(self.draw_trace.get_trace_matrix());
-        let keypad_matrix = Some(self.keypad_trace.get_trace_matrix());
+        let cpu_matrix = Some(self.cpu.to_trace_matrix(NUM_CPU_COLS));
+        let draw_matrix = Some(self.draw.to_trace_matrix(NUM_DRAW_COLS));
+        let keypad_matrix = Some(self.keypad.to_trace_matrix(NUM_KEYPAD_COLS));
 
         let range_matrix = None;
         let memory_matrix = None;
@@ -74,185 +67,291 @@ impl<F: PrimeField32> StarkState<F> {
     }
 }
 
+#[derive(Clone)]
+pub struct IncrementalMachineTrace<F: PrimeField32> {
+    pub cpu: IncrementalTrace<CpuCols<F>>,
+    pub draw: IncrementalTrace<DrawCols<F>>,
+    pub keypad: IncrementalTrace<KeypadCols<F>>,
+    // range_trace: IncrementalTrace::default(),
+    pub memory: Vec<MemoryEventLike<F>>,
+    pub frame_buffer: Vec<MemoryEventLike<F>>,
+    // TODO: Change to running hash
+    // pub inputs: Vec<(u64, InputKind)>,
+}
+
+impl<F: PrimeField32> Default for IncrementalMachineTrace<F> {
+    fn default() -> Self {
+        let mut cpu: IncrementalTrace<CpuCols<F>> = IncrementalTrace::default();
+        cpu.curr_row.program_counter = F::from_canonical_u16(PROGRAM_START_ADDRESS);
+
+        Self {
+            cpu,
+            draw: IncrementalTrace::default(),
+            keypad: IncrementalTrace::default(),
+            // range: IncrementalTrace::default(),
+            memory: Vec::new(),
+            frame_buffer: Vec::new(),
+        }
+    }
+}
+
+// TODO: Derive simple state from traces
+pub struct StarkState<F: PrimeField32> {
+    pub state: SimpleState,
+    pub trace: IncrementalMachineTrace<F>,
+}
+
+impl<F: PrimeField32> Default for StarkState<F> {
+    fn default() -> Self {
+        Self {
+            state: SimpleState::default(),
+            trace: IncrementalMachineTrace::default(),
+        }
+    }
+}
+
+impl<F: PrimeField32> StarkState<F> {
+    pub fn finalize_trace(&mut self) -> PartialMachineTrace<F> {
+        // TODO: Remove clones
+        let cpu = self.trace.cpu.trace.clone();
+        let draw = self.trace.draw.trace.clone();
+        let keypad = self.trace.keypad.trace.clone();
+
+        PartialMachineTrace {
+            cpu,
+            draw,
+            keypad,
+            memory: self.trace.memory.clone(),
+            frame_buffer: self.trace.frame_buffer.clone(),
+        }
+    }
+}
+
 impl<F: PrimeField32> State for StarkState<F> {
     fn load_rom(&mut self, bytes: &[u8]) -> Result<(), Chip8Error> {
-        self.simple_state.load_rom(bytes)
+        self.state.load_rom(bytes)
     }
 
     fn clk(&self) -> Result<u64, Chip8Error> {
-        self.simple_state.clk()
+        self.state.clk()
     }
 
     fn clk_ptr(&self) -> Arc<RwLock<u64>> {
-        self.simple_state.clk_ptr()
+        self.state.clk_ptr()
     }
 
     fn sound_timer_ptr(&self) -> Arc<RwLock<Word>> {
-        self.simple_state.sound_timer_ptr()
+        self.state.sound_timer_ptr()
     }
 
     fn frame_buffer_ptr(&self) -> Arc<RwLock<[[bool; DISPLAY_WIDTH]; DISPLAY_HEIGHT]>> {
-        self.simple_state.frame_buffer_ptr()
+        self.state.frame_buffer_ptr()
     }
 
     fn program_counter(&self) -> Address {
-        self.simple_state.program_counter()
+        self.state.program_counter()
     }
 
     fn delay_timer(&self) -> Word {
-        self.simple_state.delay_timer()
+        self.state.delay_timer()
     }
 
     fn sound_timer(&self) -> Result<Word, Chip8Error> {
-        self.simple_state.sound_timer()
+        self.state.sound_timer()
     }
 
-    fn memory(&self, addr: Address) -> Result<Word, Chip8Error> {
-        self.simple_state.memory(addr)
+    fn memory(&mut self, addr: Address) -> Result<Word, Chip8Error> {
+        let value = self.state.memory(addr)?;
+
+        let clk = self.clk()?;
+        let event = MemoryEventLike {
+            clk: F::from_wrapped_u64(clk),
+            address: F::from_canonical_u16(addr),
+            value: F::from_canonical_u8(value),
+            is_read: F::from_bool(true),
+        };
+        self.trace.memory.push(event);
+
+        Ok(value)
     }
 
     fn register(&self, index: Word) -> Word {
-        self.simple_state.register(index)
+        self.state.register(index)
     }
 
     fn index_register(&self) -> Address {
-        self.simple_state.index_register()
+        self.state.index_register()
     }
 
     fn key(&self, index: Word) -> bool {
-        self.simple_state.key(index)
+        self.state.key(index)
     }
 
-    fn frame_buffer(&self, y: usize, x: usize) -> Result<bool, Chip8Error> {
-        self.simple_state.frame_buffer(y, x)
+    fn frame_buffer(&mut self, y: usize, x: usize) -> Result<bool, Chip8Error> {
+        let value = self.state.frame_buffer(y, x)?;
+
+        let clk = self.clk()?;
+        let addr = y * DISPLAY_WIDTH + x;
+        let event = MemoryEventLike {
+            clk: F::from_wrapped_u64(clk),
+            address: F::from_canonical_usize(addr),
+            value: F::from_bool(value),
+            is_read: F::from_bool(true),
+        };
+        self.trace.frame_buffer.push(event);
+
+        Ok(value)
     }
 
-    fn set_frame_buffer(&self, y: usize, x: usize, bit: bool) -> Result<(), Chip8Error> {
-        // ((*self.frame_buffer).checked_write()?)[y][x] = bit;
+    fn set_frame_buffer(&mut self, y: usize, x: usize, bit: bool) -> Result<(), Chip8Error> {
+        let clk = self.clk()?;
+        let addr = y * DISPLAY_WIDTH + x;
+        let event = MemoryEventLike {
+            clk: F::from_wrapped_u64(clk),
+            address: F::from_canonical_usize(addr),
+            value: F::from_bool(bit),
+            is_read: F::from_bool(false),
+        };
+        self.trace.frame_buffer.push(event);
 
-        self.simple_state.set_frame_buffer(y, x, bit)
+        self.state.set_frame_buffer(y, x, bit)
     }
 
     fn set_program_counter(&mut self, pc: Address) {
-        let next_row = &mut self.cpu_trace.next_row;
+        let next_row = &mut self.trace.cpu.next_row;
         next_row.program_counter = F::from_canonical_u16(pc);
 
-        self.simple_state.set_program_counter(pc)
+        self.state.set_program_counter(pc)
     }
 
     fn set_delay_timer(&mut self, value: Word) {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.delay_timer = F::from_canonical_u8(value);
 
-        self.simple_state.set_delay_timer(value)
+        self.state.set_delay_timer(value)
     }
 
     fn set_sound_timer(&mut self, value: Word) -> Result<(), Chip8Error> {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.sound_timer = F::from_canonical_u8(value);
 
-        self.simple_state.set_sound_timer(value)
+        self.state.set_sound_timer(value)
     }
 
     fn set_index_register(&mut self, addr: Address) {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.index_register = F::from_canonical_u16(addr);
 
-        self.simple_state.set_index_register(addr)
+        self.state.set_index_register(addr)
     }
 
     fn set_register(&mut self, index: Word, value: Word) {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.registers[index as usize] = F::from_canonical_u8(value);
 
-        self.simple_state.set_register(index, value)
+        self.state.set_register(index, value)
     }
 
     fn set_flag_register(&mut self, flag: bool) {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.registers[FLAG_REGISTER] = F::from_bool(flag);
 
-        self.simple_state.set_flag_register(flag)
+        self.state.set_flag_register(flag)
     }
 
     fn set_memory(&mut self, addr: Address, value: Word) -> Result<(), Chip8Error> {
-        // if (addr as usize) < MEMORY_SIZE {
-        //     self.memory[addr as usize] = value;
-        //     Ok(())
-        // } else {
-        //     Err(Chip8Error::MemoryAccessOutOfBounds(addr))
-        // }
+        let clk = self.clk()?;
+        let event = MemoryEventLike {
+            clk: F::from_wrapped_u64(clk),
+            address: F::from_canonical_u16(addr),
+            value: F::from_canonical_u8(value),
+            is_read: F::from_bool(false),
+        };
+        self.trace.memory.push(event);
 
-        self.simple_state.set_memory(addr, value)
+        self.state.set_memory(addr, value)
     }
 
     fn set_key(&mut self, key: Key, kind: InputKind) {
-        self.cpu_trace.curr_row.keypad[key as usize] = F::from_bool(kind == InputKind::Press);
+        self.trace.cpu.curr_row.keypad[key as usize] = F::from_bool(kind == InputKind::Press);
 
-        self.keypad_trace.curr_row.index = F::from_canonical_usize(key as usize);
-        self.keypad_trace.curr_row.value = F::from_bool(kind == InputKind::Press);
-        self.keypad_trace.add_curr_row_to_trace();
+        self.trace.keypad.curr_row.index = F::from_canonical_usize(key as usize);
+        self.trace.keypad.curr_row.value = F::from_bool(kind == InputKind::Press);
+        self.trace.keypad.add_curr_row_to_trace();
 
-        self.simple_state.set_key(key, kind)
+        self.state.set_key(key, kind)
     }
 
     fn clear_framebuffer(&mut self) -> Result<(), Chip8Error> {
-        // *self.frame_buffer.checked_write()? = [[false; DISPLAY_WIDTH]; DISPLAY_HEIGHT];
+        let clk = self.clk()?;
+        for y in 0..DISPLAY_HEIGHT {
+            for x in 0..DISPLAY_WIDTH {
+                if self.state.frame_buffer(y, x)? {
+                    let addr = y * DISPLAY_WIDTH + x;
+                    let event = MemoryEventLike {
+                        clk: F::from_wrapped_u64(clk),
+                        address: F::from_canonical_usize(addr),
+                        value: F::from_bool(false),
+                        is_read: F::from_bool(false),
+                    };
+                    self.trace.frame_buffer.push(event);
+                }
+            }
+        }
 
-        self.simple_state.clear_framebuffer()
+        self.state.clear_framebuffer()
     }
 
     fn push_stack(&mut self, addr: Address) {
-        let curr_row = &mut self.cpu_trace.curr_row;
-        let next_row = &mut self.cpu_trace.next_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
+        let next_row = &mut self.trace.cpu.next_row;
         curr_row.stack_pointer += F::one();
-        curr_row.stack[self.simple_state.stack_pointer as usize] = curr_row.program_counter;
+        curr_row.stack[self.state.stack_pointer as usize] = curr_row.program_counter;
         next_row.program_counter = F::from_canonical_u16(addr);
 
-        self.simple_state.push_stack(addr)
+        self.state.push_stack(addr)
     }
 
     fn pop_stack(&mut self) {
-        let curr_row = &mut self.cpu_trace.curr_row;
-        let next_row = &mut self.cpu_trace.next_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
+        let next_row = &mut self.trace.cpu.next_row;
         curr_row.stack_pointer -= F::one();
-        next_row.program_counter = F::from_canonical_u16(
-            self.simple_state.stack[self.simple_state.stack_pointer as usize],
-        );
+        next_row.program_counter =
+            F::from_canonical_u16(self.state.stack[self.state.stack_pointer as usize]);
 
-        self.simple_state.pop_stack()
+        self.state.pop_stack()
     }
 
     fn increment_program_counter(&mut self) {
-        let curr_row = &self.cpu_trace.curr_row;
-        let next_row = &mut self.cpu_trace.next_row;
+        let curr_row = &self.trace.cpu.curr_row;
+        let next_row = &mut self.trace.cpu.next_row;
         next_row.program_counter = curr_row.program_counter + F::one();
 
-        self.simple_state.increment_program_counter()
+        self.state.increment_program_counter()
     }
 
     fn increment_clk(&mut self) -> Result<(), Chip8Error> {
-        let curr_row = &self.cpu_trace.curr_row;
-        let next_row = &mut self.cpu_trace.next_row;
+        let curr_row = &self.trace.cpu.curr_row;
+        let next_row = &mut self.trace.cpu.next_row;
         next_row.clk = curr_row.clk + F::one();
 
-        self.cpu_trace.add_curr_row_to_trace();
+        self.trace.cpu.add_curr_row_to_trace();
 
-        self.simple_state.increment_clk()
+        self.state.increment_clk()
     }
 
     fn decrement_delay_timer(&mut self) {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.delay_timer -= F::one();
 
-        self.simple_state.decrement_delay_timer()
+        self.state.decrement_delay_timer()
     }
 
     fn decrement_sound_timer(&mut self) -> Result<(), Chip8Error> {
-        let curr_row = &mut self.cpu_trace.curr_row;
+        let curr_row = &mut self.trace.cpu.curr_row;
         curr_row.sound_timer -= F::one();
 
-        self.simple_state.decrement_sound_timer()
+        self.state.decrement_sound_timer()
     }
 }
 
@@ -270,21 +369,6 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
         self.next_row.stack_pointer = self.curr_row.stack_pointer;
         self.next_row.keypad = self.curr_row.keypad;
     }
-
-    // TODO: Abstract this out
-    pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
-        // TODO: Avoid clone
-        let mut trace = self.trace.clone();
-        let next_power_of_two = trace.len().next_power_of_two();
-        trace.resize(next_power_of_two, CpuCols::default());
-
-        let ptr = trace.as_ptr() as *const F;
-        let len = trace.len() * NUM_CPU_COLS;
-        let values = unsafe { slice::from_raw_parts(ptr, len) };
-        let values = values.to_vec();
-
-        RowMajorMatrix::new(values, NUM_CPU_COLS)
-    }
 }
 
 impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
@@ -293,19 +377,6 @@ impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
         self.curr_row = self.next_row;
 
         self.next_row = KeypadCols::default();
-    }
-
-    pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
-        let mut trace = self.trace.clone();
-        let next_power_of_two = trace.len().next_power_of_two();
-        trace.resize(next_power_of_two, KeypadCols::default());
-
-        let ptr = trace.as_ptr() as *const F;
-        let len = trace.len() * NUM_KEYPAD_COLS;
-        let values = unsafe { slice::from_raw_parts(ptr, len) };
-        let values = values.to_vec();
-
-        RowMajorMatrix::new(values, NUM_KEYPAD_COLS)
     }
 }
 
@@ -316,15 +387,22 @@ impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
 
         self.next_row = DrawCols::default();
     }
+}
 
-    pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
-        let mut trace = self.trace.clone();
+pub trait ToTraceMatrix<F: PrimeField32> {
+    fn to_trace_matrix(&self, num_cols: usize) -> RowMajorMatrix<F>;
+}
+
+impl<F: PrimeField32, Cols: Default + Clone> ToTraceMatrix<F> for Vec<Cols> {
+    // TODO: Calculate num_cols from struct
+    fn to_trace_matrix(&self, num_cols: usize) -> RowMajorMatrix<F> {
+        let mut trace = self.clone();
         let next_power_of_two = trace.len().next_power_of_two();
-        trace.resize(next_power_of_two, DrawCols::default());
+        trace.resize(next_power_of_two, Cols::default());
 
         let ptr = trace.as_ptr() as *const F;
-        let len = trace.len() * NUM_DRAW_COLS;
+        let len = trace.len() * num_cols;
         let values = unsafe { slice::from_raw_parts(ptr, len) };
-        RowMajorMatrix::new(values.to_vec(), NUM_DRAW_COLS)
+        RowMajorMatrix::new(values.to_vec(), num_cols)
     }
 }
