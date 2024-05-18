@@ -7,18 +7,18 @@ use p3_util::indices_arr;
 use p3_derive::Headers;
 
 #[repr(C)]
-#[derive(AlignedBorrow)]
+#[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct FrameBufferCols<T> {
-    addr: T,
-    clk: T,
-    value: T,
-    is_read: T,
-    is_write: T,
-    addr_unchanged: T,
-    diff: T,
-    is_first_read: T,
-    is_last_write: T,
+    pub addr: T,
+    pub clk: T,
+    pub value: T,
+    pub is_read: T,
+    pub is_write: T,
+    pub addr_unchanged: T,
+    pub diff: T,
+    pub is_first_read: T,
+    pub is_last_write: T,
 }
 
 pub const NUM_FRAME_BUFFER_COLS: usize = size_of::<FrameBufferCols<u8>>();

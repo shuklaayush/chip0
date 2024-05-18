@@ -7,10 +7,10 @@ use p3_util::indices_arr;
 use p3_derive::Headers;
 
 #[repr(C)]
-#[derive(AlignedBorrow)]
+#[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct HashCols<T> {
-    is_real: T,
+    pub is_real: T,
 }
 
 pub const NUM_HASH_COLS: usize = size_of::<HashCols<u8>>();

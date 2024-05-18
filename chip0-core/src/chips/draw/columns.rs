@@ -7,23 +7,23 @@ use p3_util::indices_arr;
 use p3_derive::Headers;
 
 #[repr(C)]
-#[derive(AlignedBorrow)]
+#[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct DrawCols<T> {
-    is_real: T,
-    clk: T,
-    register_x: T,
-    register_y: T,
-    index_register: T,
-    ys: T,
-    y: T,
-    pixels: T,
-    xs: T,
-    x: T,
-    pixel: T,
-    frame_buffer_y_x: T,
-    flipped: T,
-    register_flag: T,
+    pub is_real: T,
+    pub clk: T,
+    pub register_x: T,
+    pub register_y: T,
+    pub index_register: T,
+    pub ys: T,
+    pub y: T,
+    pub pixels: T,
+    pub xs: T,
+    pub x: T,
+    pub pixel: T,
+    pub frame_buffer_y_x: T,
+    pub flipped: T,
+    pub register_flag: T,
 }
 
 pub const NUM_DRAW_COLS: usize = size_of::<DrawCols<u8>>();

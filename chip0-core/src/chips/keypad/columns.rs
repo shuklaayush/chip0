@@ -7,14 +7,14 @@ use p3_util::indices_arr;
 use p3_derive::Headers;
 
 #[repr(C)]
-#[derive(AlignedBorrow)]
+#[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct KeypadCols<T> {
-    clk: T,
-    index: T,
-    value: T,
-    input_hash: T,
-    output_hash: T,
+    pub clk: T,
+    pub index: T,
+    pub value: T,
+    pub input_hash: T,
+    pub output_hash: T,
 }
 
 pub const NUM_KEYPAD_COLS: usize = size_of::<KeypadCols<u8>>();

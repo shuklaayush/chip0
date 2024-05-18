@@ -218,7 +218,7 @@ dependencies = [
 [[package]]
 name = "chip8-core"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/chip8-rs.git#b9382e1fff20128de84a6600c384d07724919946"
+source = "git+https://github.com/shuklaayush/chip8-rs.git#c84d0906b18bcd7d7a495efff5e7775211a998f8"
 dependencies = [
  "rand",
  "thiserror",

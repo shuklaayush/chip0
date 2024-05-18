@@ -7,11 +7,11 @@ use p3_util::indices_arr;
 use p3_derive::Headers;
 
 #[repr(C)]
-#[derive(AlignedBorrow)]
+#[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct RangeCols<T> {
-    counter: T,
-    mult: T,
+    pub counter: T,
+    pub mult: T,
 }
 
 pub const NUM_RANGE_COLS: usize = size_of::<RangeCols<u8>>();

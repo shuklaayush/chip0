@@ -1,6 +1,6 @@
-mod air;
-mod columns;
-mod interaction;
+pub mod air;
+pub mod columns;
+pub mod interaction;
 
 use p3_field::{ExtensionField, PrimeField32};
 use p3_stark::AirDebug;

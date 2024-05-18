@@ -1,13 +1,13 @@
 use p3_derive::EnumDispatch;
 use std::fmt::Debug;
 
-mod cpu;
-mod draw;
-mod frame_buffer;
-// mod hash;
-mod keypad;
-mod memory;
-mod range;
+pub mod cpu;
+pub mod draw;
+pub mod frame_buffer;
+// pub mod hash;
+pub mod keypad;
+pub mod memory;
+pub mod range;
 
 use self::{
     cpu::CpuChip, draw::DrawChip, frame_buffer::FrameBufferChip, keypad::KeypadChip,
