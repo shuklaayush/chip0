@@ -22,16 +22,19 @@ p3-symmetric = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "f
 p3-uni-stark = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
 p3-util = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
 
+p3-derive = { path = "../p3-test/derive" }
+p3-interaction = { path = "../p3-test/interaction" }
+p3-stark = { path = "../p3-test/stark", features = ["debug-trace"] }
+p3-machine = { path = "../p3-test/machine", features = ["debug-trace"] }
+
+chip8-core = { git = "https://github.com/shuklaayush/chip8-rs.git" }
+chip8-tui = { git = "https://github.com/shuklaayush/chip8-rs.git" }
+
 serde = { version = "1.0", default-features = false, features = [
     "derive",
     "alloc",
 ] }
 tracing = { version = "0.1.37" }
-
-p3-derive = { path = "../p3-test/derive" }
-p3-interaction = { path = "../p3-test/interaction" }
-p3-stark = { path = "../p3-test/stark", features = ["debug-trace"] }
-p3-machine = { path = "../p3-test/machine", features = ["debug-trace"] }
 
 # [patch."https://github.com/Plonky3/Plonky3"]
 [patch."https://github.com/shuklaayush/Plonky3"]
@@ -47,3 +50,5 @@ p3-matrix = { path = "../Plonky3/matrix" }
 p3-merkle-tree = { path = "../Plonky3/merkle-tree" }
 p3-symmetric = { path = "../Plonky3/symmetric" }
 p3-uni-stark = { path = "../Plonky3/uni-stark" }
+
+# [patch."https://github.com/shuklaayush/chip8-rs"]

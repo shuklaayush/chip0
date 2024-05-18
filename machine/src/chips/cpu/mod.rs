@@ -1,0 +1,18 @@
+mod air;
+mod columns;
+mod interaction;
+
+use p3_field::{ExtensionField, PrimeField32};
+use p3_stark::AirDebug;
+
+use self::columns::CpuCols;
+
+#[derive(Clone, Debug)]
+pub struct CpuChip {}
+
+impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for CpuChip {
+    #[cfg(feature = "debug-trace")]
+    fn main_headers(&self) -> Vec<String> {
+        CpuCols::<F>::headers()
+    }
+}

@@ -27,6 +27,9 @@ p3-interaction = { workspace = true }
 p3-stark = { workspace = true }
 p3-machine = { workspace = true }
 
+chip8-core = { workspace = true }
+chip8-tui = { workspace = true }
+
 serde = { workspace = true }
 tracing = { workspace = true }
 
