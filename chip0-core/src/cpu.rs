@@ -19,7 +19,7 @@ use std::{
 
 use crate::trace::StarkState;
 
-pub const TICKS_PER_PROOF: u64 = 2;
+pub const TICKS_PER_PROOF: u64 = 5;
 
 pub struct StarkCpu<R, SC>
 where
@@ -307,14 +307,11 @@ where
         run_loop(status.clone(), self.frequency(), move |_| {
             let clk = self.state().clk()?;
 
-            if clk % TICKS_PER_PROOF == 0 {
-                let request = ProofRequest {
-                    traces: self.state.get_trace_matrices(),
-                    // TODO
-                    public_values: vec![],
-                };
-                proving_queue.checked_write()?.push_back(request);
+            let curr_row = &mut self.state().cpu_trace.curr_row;
+            if clk == 0 {
+                curr_row.is_first = Val::<SC>::one();
             }
+            curr_row.is_real = Val::<SC>::one();
 
             while let Some(event) = (*input_queue.checked_write()?).dequeue(clk) {
                 self.state().set_key(event.key, event.kind);
@@ -326,6 +323,18 @@ where
             }
 
             self.state().increment_clk()?;
+
+            if (clk + 1) % TICKS_PER_PROOF == 0 {
+                // TODO: Generate trace in other thread
+                let request = ProofRequest {
+                    traces: self.state.get_trace_matrices(),
+                    // TODO
+                    public_values: vec![],
+                };
+                proving_queue.checked_write()?.push_back(request);
+                self.op_wait_key_press(status.clone(), input_queue.clone(), 0)?;
+            }
+
             Ok(())
         });
     }

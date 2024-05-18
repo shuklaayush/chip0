@@ -9,7 +9,7 @@ use std::{
 use crate::{error::Chip8Error, util::run_loop};
 
 pub struct ProofRequest<F: AbstractField> {
-    pub traces: Vec<RowMajorMatrix<F>>,
+    pub traces: Vec<Option<RowMajorMatrix<F>>>,
     pub public_values: Vec<F>,
 }
 

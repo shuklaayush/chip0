@@ -54,12 +54,23 @@ impl<F: PrimeField32> Default for StarkState<F> {
 }
 
 impl<F: PrimeField32> StarkState<F> {
-    pub fn get_trace_matrices(&self) -> Vec<RowMajorMatrix<F>> {
-        let cpu_matrix = self.cpu_trace.get_trace_matrix();
-        let draw_matrix = self.draw_trace.get_trace_matrix();
-        let keypad_matrix = self.keypad_trace.get_trace_matrix();
+    pub fn get_trace_matrices(&self) -> Vec<Option<RowMajorMatrix<F>>> {
+        let cpu_matrix = Some(self.cpu_trace.get_trace_matrix());
+        let draw_matrix = Some(self.draw_trace.get_trace_matrix());
+        let keypad_matrix = Some(self.keypad_trace.get_trace_matrix());
 
-        vec![cpu_matrix, draw_matrix, keypad_matrix]
+        let range_matrix = None;
+        let memory_matrix = None;
+        let frame_buffer_matrix = None;
+
+        vec![
+            cpu_matrix,
+            draw_matrix,
+            keypad_matrix,
+            range_matrix,
+            memory_matrix,
+            frame_buffer_matrix,
+        ]
     }
 }
 
@@ -262,11 +273,17 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
 
     // TODO: Abstract this out
     pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
-        let ptr = self.trace.as_ptr() as *const F;
-        let len = self.trace.len() * NUM_CPU_COLS;
-        let values = unsafe { slice::from_raw_parts(ptr, len) };
+        // TODO: Avoid clone
+        let mut trace = self.trace.clone();
+        let next_power_of_two = trace.len().next_power_of_two();
+        trace.resize(next_power_of_two, CpuCols::default());
 
-        RowMajorMatrix::new(values.to_vec(), NUM_CPU_COLS)
+        let ptr = trace.as_ptr() as *const F;
+        let len = trace.len() * NUM_CPU_COLS;
+        let values = unsafe { slice::from_raw_parts(ptr, len) };
+        let values = values.to_vec();
+
+        RowMajorMatrix::new(values, NUM_CPU_COLS)
     }
 }
 
@@ -279,11 +296,16 @@ impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
     }
 
     pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
-        let ptr = self.trace.as_ptr() as *const F;
-        let len = self.trace.len() * NUM_KEYPAD_COLS;
-        let values = unsafe { slice::from_raw_parts(ptr, len) };
+        let mut trace = self.trace.clone();
+        let next_power_of_two = trace.len().next_power_of_two();
+        trace.resize(next_power_of_two, KeypadCols::default());
 
-        RowMajorMatrix::new(values.to_vec(), NUM_KEYPAD_COLS)
+        let ptr = trace.as_ptr() as *const F;
+        let len = trace.len() * NUM_KEYPAD_COLS;
+        let values = unsafe { slice::from_raw_parts(ptr, len) };
+        let values = values.to_vec();
+
+        RowMajorMatrix::new(values, NUM_KEYPAD_COLS)
     }
 }
 
@@ -296,10 +318,13 @@ impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
     }
 
     pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
-        let ptr = self.trace.as_ptr() as *const F;
-        let len = self.trace.len() * NUM_DRAW_COLS;
-        let values = unsafe { slice::from_raw_parts(ptr, len) };
+        let mut trace = self.trace.clone();
+        let next_power_of_two = trace.len().next_power_of_two();
+        trace.resize(next_power_of_two, DrawCols::default());
 
+        let ptr = trace.as_ptr() as *const F;
+        let len = trace.len() * NUM_DRAW_COLS;
+        let values = unsafe { slice::from_raw_parts(ptr, len) };
         RowMajorMatrix::new(values.to_vec(), NUM_DRAW_COLS)
     }
 }

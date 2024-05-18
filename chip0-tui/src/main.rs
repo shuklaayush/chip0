@@ -13,7 +13,6 @@ use clap::Parser;
 use csv::{Reader, Writer, WriterBuilder};
 use drivers::{input::CsvRecord, prover::DefaultProverDriver};
 use eyre::Result;
-use p3_baby_bear::BabyBear;
 use p3_machine::config::MyConfig;
 use rand::{random, rngs::StdRng, SeedableRng};
 use std::fs::{self, OpenOptions};
@@ -79,8 +78,8 @@ async fn main() -> Result<()> {
             None
         }
     };
-    // let prover_driver = Some(DefaultProverDriver::new());
-    let prover_driver: Option<DefaultProverDriver> = None;
+    let prover_driver = Some(DefaultProverDriver::new());
+    // let prover_driver: Option<DefaultProverDriver> = None;
 
     let seeded_rng = StdRng::seed_from_u64(args.random_seed.unwrap_or(random()));
     let cpu: StarkCpu<_, MyConfig> = StarkCpu::new(args.clk_freq, seeded_rng);

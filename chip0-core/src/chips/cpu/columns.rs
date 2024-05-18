@@ -11,19 +11,6 @@ use p3_derive::Headers;
 #[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct CpuCols<T> {
-    pub is_real: T,
-    pub is_first: T,
-    pub is_last: T,
-
-    pub program_counter: T,
-    pub registers: [T; NUM_REGISTERS],
-    pub index_register: T,
-    pub stack: [T; STACK_DEPTH],
-    pub stack_pointer: T,
-    pub delay_timer: T,
-    pub sound_timer: T,
-    pub keypad: [T; NUM_KEYS],
-
     pub clk: T,
     pub opcode: T,
 
@@ -62,6 +49,15 @@ pub struct CpuCols<T> {
     pub is_store_registers: T,
     pub is_load_memory: T,
 
+    pub program_counter: T,
+    pub registers: [T; NUM_REGISTERS],
+    pub index_register: T,
+    pub stack: [T; STACK_DEPTH],
+    pub stack_pointer: T,
+    pub delay_timer: T,
+    pub sound_timer: T,
+    pub keypad: [T; NUM_KEYS],
+
     pub x: T,
     pub y: T,
     pub n: T,
@@ -73,6 +69,10 @@ pub struct CpuCols<T> {
 
     // x <= i
     pub lte_x_sel: [T; NUM_REGISTERS],
+
+    pub is_real: T,
+    pub is_first: T,
+    pub is_final: T,
 }
 
 pub const NUM_CPU_COLS: usize = size_of::<CpuCols<u8>>();

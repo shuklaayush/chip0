@@ -38,7 +38,6 @@ impl ProverDriver<MyConfig> for DefaultProverDriver {
 
         let (pk, vk) = self.machine.setup(&self.config);
 
-        let traces = traces.into_iter().map(Some).collect::<Vec<_>>();
         let mut challenger = self.new_challenger();
         self.machine
             .prove(&self.config, &mut challenger, &pk, traces, public_values);
