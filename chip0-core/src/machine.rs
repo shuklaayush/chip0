@@ -2,8 +2,12 @@ use p3_field::PrimeField32;
 use p3_machine::machine::Machine;
 use p3_uni_stark::{StarkGenericConfig, Val};
 
-use crate::chips::Chip0MachineChip;
+use crate::chips::{
+    cpu::CpuChip, draw::DrawChip, frame_buffer::FrameBufferChip, keypad::KeypadChip,
+    memory::MemoryChip, range::RangeChip, Chip0MachineChip,
+};
 
+#[derive(Default)]
 pub struct Chip0Machine {}
 
 pub enum Chip0MachineBus {}
@@ -14,6 +18,20 @@ where
     Val<SC>: PrimeField32,
 {
     fn chips(&self) -> Vec<Chip0MachineChip> {
-        vec![]
+        let cpu_chip = CpuChip {};
+        let draw_chip = DrawChip {};
+        let keypad_chip = KeypadChip {};
+        let range_chip = RangeChip {};
+        let memory_chip = MemoryChip {};
+        let frame_buffer_chip = FrameBufferChip {};
+
+        vec![
+            Chip0MachineChip::Cpu(cpu_chip),
+            Chip0MachineChip::Draw(draw_chip),
+            Chip0MachineChip::Keypad(keypad_chip),
+            Chip0MachineChip::Range(range_chip),
+            Chip0MachineChip::Memory(memory_chip),
+            Chip0MachineChip::FrameBuffer(frame_buffer_chip),
+        ]
     }
 }

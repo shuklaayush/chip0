@@ -25,7 +25,7 @@ pub struct CpuCols<T> {
     pub keypad: [T; NUM_KEYS],
 
     pub clk: T,
-    pub instruction: T,
+    pub opcode: T,
 
     pub is_clear_display: T,
     pub is_return: T,
@@ -38,6 +38,7 @@ pub struct CpuCols<T> {
     pub is_add: T,
     pub is_move: T,
     pub is_or: T,
+    pub is_and: T,
     pub is_xor: T,
     pub is_add_xy: T,
     pub is_sub_xy: T,
@@ -67,11 +68,11 @@ pub struct CpuCols<T> {
     pub nn: T,
     pub nnn: T,
 
-    pub x_bits: [T; NUM_REGISTERS],
-    pub y_bits: [T; NUM_REGISTERS],
+    pub x_sel: [T; NUM_REGISTERS],
+    pub y_sel: [T; NUM_REGISTERS],
 
     // x <= i
-    pub x_lte: [T; NUM_REGISTERS],
+    pub lte_x_sel: [T; NUM_REGISTERS],
 }
 
 pub const NUM_CPU_COLS: usize = size_of::<CpuCols<u8>>();

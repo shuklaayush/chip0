@@ -5,6 +5,7 @@ use chip8_core::{
     keypad::Key,
     state::{Address, SimpleState, State, Word},
 };
+use core::slice;
 use p3_field::PrimeField32;
 use p3_matrix::dense::RowMajorMatrix;
 use std::sync::{Arc, RwLock};
@@ -12,29 +13,26 @@ use std::sync::{Arc, RwLock};
 use crate::chips::{
     cpu::columns::{CpuCols, NUM_CPU_COLS},
     draw::columns::{DrawCols, NUM_DRAW_COLS},
-    frame_buffer::columns::NUM_FRAME_BUFFER_COLS,
     keypad::columns::{KeypadCols, NUM_KEYPAD_COLS},
-    memory::columns::NUM_MEMORY_COLS,
-    range::columns::{RangeCols, NUM_RANGE_COLS},
 };
 
 #[derive(Default)]
 pub struct IncrementalTrace<Cols: Default> {
-    trace: Vec<Cols>,
-    curr_row: Cols,
-    next_row: Cols,
+    pub trace: Vec<Cols>,
+    pub curr_row: Cols,
+    pub next_row: Cols,
 }
 
 // TODO: Derive simple state from traces
 pub struct StarkState<F: PrimeField32> {
-    simple_state: SimpleState,
+    pub simple_state: SimpleState,
 
-    cpu_trace: IncrementalTrace<CpuCols<F>>,
-    draw_trace: IncrementalTrace<DrawCols<F>>,
-    keypad_trace: IncrementalTrace<KeypadCols<F>>,
-    // range_trace: IncrementalTrace<RangeCols<F>>,
-    // memory_trace: RowMajorMatrix<F>,
-    // frame_buffer_trace: RowMajorMatrix<F>,
+    pub cpu_trace: IncrementalTrace<CpuCols<F>>,
+    pub draw_trace: IncrementalTrace<DrawCols<F>>,
+    pub keypad_trace: IncrementalTrace<KeypadCols<F>>,
+    // pub range_trace: IncrementalTrace<RangeCols<F>>,
+    // pub memory_trace: RowMajorMatrix<F>,
+    // pub frame_buffer_trace: RowMajorMatrix<F>,
 }
 
 impl<F: PrimeField32> Default for StarkState<F> {
@@ -49,6 +47,16 @@ impl<F: PrimeField32> Default for StarkState<F> {
             keypad_trace: IncrementalTrace::default(),
             // range_trace: IncrementalTrace::default(),
         }
+    }
+}
+
+impl<F: PrimeField32> StarkState<F> {
+    pub fn get_trace_matrices(&self) -> Vec<RowMajorMatrix<F>> {
+        let cpu_matrix = self.cpu_trace.get_trace_matrix();
+        let draw_matrix = self.draw_trace.get_trace_matrix();
+        let keypad_matrix = self.keypad_trace.get_trace_matrix();
+
+        vec![cpu_matrix, draw_matrix, keypad_matrix]
     }
 }
 
@@ -248,6 +256,15 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
         self.next_row.stack_pointer = self.curr_row.stack_pointer;
         self.next_row.keypad = self.curr_row.keypad;
     }
+
+    // TODO: Abstract this out
+    pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
+        let ptr = self.trace.as_ptr() as *const F;
+        let len = self.trace.len() * NUM_CPU_COLS;
+        let values = unsafe { slice::from_raw_parts(ptr, len) };
+
+        RowMajorMatrix::new(values.to_vec(), NUM_CPU_COLS)
+    }
 }
 
 impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
@@ -257,6 +274,14 @@ impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
 
         self.next_row = KeypadCols::default();
     }
+
+    pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
+        let ptr = self.trace.as_ptr() as *const F;
+        let len = self.trace.len() * NUM_KEYPAD_COLS;
+        let values = unsafe { slice::from_raw_parts(ptr, len) };
+
+        RowMajorMatrix::new(values.to_vec(), NUM_KEYPAD_COLS)
+    }
 }
 
 impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
@@ -265,5 +290,13 @@ impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
         self.curr_row = self.next_row;
 
         self.next_row = DrawCols::default();
+    }
+
+    pub fn get_trace_matrix(&self) -> RowMajorMatrix<F> {
+        let ptr = self.trace.as_ptr() as *const F;
+        let len = self.trace.len() * NUM_DRAW_COLS;
+        let values = unsafe { slice::from_raw_parts(ptr, len) };
+
+        RowMajorMatrix::new(values.to_vec(), NUM_DRAW_COLS)
     }
 }

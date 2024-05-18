@@ -1,6 +1,5 @@
 use core::borrow::Borrow;
 use p3_air::{Air, AirBuilder, BaseAir};
-use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
 use super::columns::{CpuCols, NUM_CPU_COLS};

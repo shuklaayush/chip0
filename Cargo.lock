@@ -218,7 +218,6 @@ dependencies = [
 [[package]]
 name = "chip8-core"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/chip8-rs.git#c84d0906b18bcd7d7a495efff5e7775211a998f8"
 dependencies = [
  "rand",
  "thiserror",
@@ -664,7 +663,6 @@ dependencies = [
 [[package]]
 name = "p3-derive"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -716,7 +714,6 @@ dependencies = [
 [[package]]
 name = "p3-interaction"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "p3-air",
  "p3-field",
@@ -755,7 +752,6 @@ dependencies = [
 [[package]]
 name = "p3-machine"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "itertools",
  "p3-air",
@@ -848,7 +844,6 @@ dependencies = [
 [[package]]
 name = "p3-stark"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "p3-air",
  "p3-field",
