@@ -1,6 +1,49 @@
-[package]
-name = "chip0"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["machine"]
+resolver = "2"
 
-[dependencies]
+[workspace.dependencies]
+p3-air = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-baby-bear = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-challenger = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-commit = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-dft = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-field = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-fri = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-goldilocks = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-keccak = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-keccak-air = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-matrix = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-maybe-rayon = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-mds = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-merkle-tree = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-poseidon2 = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-symmetric = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-uni-stark = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-util = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+
+serde = { version = "1.0", default-features = false, features = [
+    "derive",
+    "alloc",
+] }
+tracing = { version = "0.1.37" }
+
+p3-derive = { path = "../p3-test/derive" }
+p3-interaction = { path = "../p3-test/interaction" }
+p3-stark = { path = "../p3-test/stark", features = ["debug-trace"] }
+p3-machine = { path = "../p3-test/machine", features = ["debug-trace"] }
+
+# [patch."https://github.com/Plonky3/Plonky3"]
+[patch."https://github.com/shuklaayush/Plonky3"]
+p3-air = { path = "../Plonky3/air" }
+p3-challenger = { path = "../Plonky3/challenger" }
+p3-commit = { path = "../Plonky3/commit" }
+p3-dft = { path = "../Plonky3/dft" }
+p3-field = { path = "../Plonky3/field" }
+p3-fri = { path = "../Plonky3/fri" }
+p3-keccak = { path = "../Plonky3/keccak" }
+p3-keccak-air = { path = "../Plonky3/keccak-air" }
+p3-matrix = { path = "../Plonky3/matrix" }
+p3-merkle-tree = { path = "../Plonky3/merkle-tree" }
+p3-symmetric = { path = "../Plonky3/symmetric" }
+p3-uni-stark = { path = "../Plonky3/uni-stark" }
