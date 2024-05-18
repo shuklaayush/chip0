@@ -18,8 +18,8 @@ use self::{
 pub enum Chip0MachineChip {
     Cpu(CpuChip),
     Draw(DrawChip),
-    FrameBuffer(FrameBufferChip),
     Keypad(KeypadChip),
-    Memory(MemoryChip),
     Range(RangeChip),
+    Memory(MemoryChip),
+    FrameBuffer(FrameBufferChip),
 }

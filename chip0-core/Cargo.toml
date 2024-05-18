@@ -1,5 +1,5 @@
 [package]
-name = "chip0"
+name = "chip0-core"
 version = "0.1.0"
 edition = "2021"
 
@@ -28,7 +28,6 @@ p3-stark = { workspace = true }
 p3-machine = { workspace = true }
 
 chip8-core = { workspace = true }
-chip8-tui = { workspace = true }
 
 serde = { workspace = true }
 tracing = { workspace = true }

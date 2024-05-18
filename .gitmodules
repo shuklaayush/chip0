@@ -1,0 +1,12 @@
+[submodule "rom/chip8-test-suite"]
+	path = rom/chip8-test-suite
+	url = git@github.com:Timendus/chip8-test-suite.git
+[submodule "rom/chip8Archive"]
+	path = rom/chip8Archive
+	url = git@github.com:JohnEarnest/chip8Archive.git
+[submodule "rom/chip8-roms"]
+	path = rom/chip8-roms
+	url = git@github.com:kripod/chip8-roms.git
+[submodule "rom/chip8-test-rom"]
+	path = rom/chip8-test-rom
+	url = git@github.com:corax89/chip8-test-rom.git

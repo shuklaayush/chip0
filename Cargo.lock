@@ -163,11 +163,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "chip0"
+name = "chip0-core"
 version = "0.1.0"
 dependencies = [
  "chip8-core",
- "chip8-tui",
  "itertools",
  "p3-air",
  "p3-baby-bear",
@@ -200,28 +199,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "chip0-tui"
+version = "0.1.0"
+dependencies = [
+ "chip0-core",
+ "chip8-core",
+ "clap",
+ "crossterm",
+ "csv",
+ "eyre",
+ "p3-baby-bear",
+ "rand",
+ "ratatui",
+ "serde",
+ "tokio",
+]
+
+[[package]]
 name = "chip8-core"
 version = "0.1.0"
 source = "git+https://github.com/shuklaayush/chip8-rs.git#b9382e1fff20128de84a6600c384d07724919946"
 dependencies = [
  "rand",
  "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "chip8-tui"
-version = "0.1.0"
-source = "git+https://github.com/shuklaayush/chip8-rs.git#b9382e1fff20128de84a6600c384d07724919946"
-dependencies = [
- "chip8-core",
- "clap",
- "crossterm",
- "csv",
- "eyre",
- "rand",
- "ratatui",
- "serde",
  "tokio",
 ]
 
@@ -664,6 +664,7 @@ dependencies = [
 [[package]]
 name = "p3-derive"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -715,6 +716,7 @@ dependencies = [
 [[package]]
 name = "p3-interaction"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "p3-air",
  "p3-field",
@@ -753,6 +755,7 @@ dependencies = [
 [[package]]
 name = "p3-machine"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "itertools",
  "p3-air",
@@ -845,6 +848,7 @@ dependencies = [
 [[package]]
 name = "p3-stark"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-test.git#f32e7de140d5f1ff2468a154c9b5d93d9fa82421"
 dependencies = [
  "p3-air",
  "p3-field",

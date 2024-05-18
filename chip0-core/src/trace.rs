@@ -9,32 +9,32 @@ use p3_field::PrimeField32;
 use p3_matrix::dense::RowMajorMatrix;
 use std::sync::{Arc, RwLock};
 
-pub struct Chip8State<F: PrimeField32> {
+pub struct StarkState<F: PrimeField32> {
     simple_state: SimpleState,
 
     cpu_trace: RowMajorMatrix<F>,
     draw_trace: RowMajorMatrix<F>,
-    frame_buffer_trace: RowMajorMatrix<F>,
     keypad_trace: RowMajorMatrix<F>,
-    memory_trace: RowMajorMatrix<F>,
     range_trace: RowMajorMatrix<F>,
+    // memory_trace: RowMajorMatrix<F>,
+    // frame_buffer_trace: RowMajorMatrix<F>,
 }
 
-impl<F: PrimeField32> Default for Chip8State<F> {
+impl<F: PrimeField32> Default for StarkState<F> {
     fn default() -> Self {
         Self {
             simple_state: SimpleState::default(),
             cpu_trace: RowMajorMatrix::new(vec![], 0),
             draw_trace: RowMajorMatrix::new(vec![], 0),
-            frame_buffer_trace: RowMajorMatrix::new(vec![], 0),
             keypad_trace: RowMajorMatrix::new(vec![], 0),
-            memory_trace: RowMajorMatrix::new(vec![], 0),
             range_trace: RowMajorMatrix::new(vec![], 0),
+            // memory_trace: RowMajorMatrix::new(vec![], 0),
+            // frame_buffer_trace: RowMajorMatrix::new(vec![], 0),
         }
     }
 }
 
-impl<F: PrimeField32> State for Chip8State<F> {
+impl<F: PrimeField32> State for StarkState<F> {
     fn load_rom(&mut self, bytes: &[u8]) -> Result<(), Chip8Error> {
         self.simple_state.load_rom(bytes)
     }
