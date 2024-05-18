@@ -17,6 +17,8 @@ use p3_machine::config::MyConfig;
 use rand::{random, rngs::StdRng, SeedableRng};
 use std::fs::{self, OpenOptions};
 use terminal::{restore_terminal, setup_terminal};
+use tracing_forest::{util::LevelFilter, ForestLayer};
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter, Registry};
 
 use crate::drivers::{
     audio::TerminalAudio, display::TerminalDisplay, input::TerminalKeyboardInput,
@@ -27,6 +29,16 @@ async fn main() -> Result<()> {
     let args = CmdArgs::parse();
 
     let rom = fs::read(args.rom)?;
+
+    let env_filter = EnvFilter::builder()
+        .with_default_directive(LevelFilter::INFO.into())
+        .from_env_lossy();
+
+    Registry::default()
+        .with(env_filter)
+        .with(ForestLayer::default())
+        .init();
+
     let terminal = setup_terminal(args.headless)?;
 
     let (inputs, input_writer) = if let Some(input_file) = &args.input_file {

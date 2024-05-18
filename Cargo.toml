@@ -36,6 +36,8 @@ serde = { version = "1.0", default-features = false, features = [
     "alloc",
 ] }
 tracing = { version = "0.1.37" }
+tracing-subscriber = { version = "0.3.17", features = ["std", "env-filter"] }
+tracing-forest = { version = "0.1.6", features = ["ansi", "smallvec"] }
 rand = { version = "0.8.5" }
 
 # [patch."https://github.com/Plonky3/Plonky3"]

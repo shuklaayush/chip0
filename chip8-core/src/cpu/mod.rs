@@ -451,7 +451,7 @@ pub trait Cpu {
                 self.op_shift_left(x);
             }
             Instruction::SkipNotEqualXY(x, y) => {
-                self.op_skip_equal_xy(x, y);
+                self.op_skip_not_equal_xy(x, y);
             }
             Instruction::LoadI(nnn) => {
                 self.op_load_i(nnn);

@@ -1,5 +1,8 @@
 use chip8_core::{
-    constants::{DISPLAY_HEIGHT, DISPLAY_WIDTH, FLAG_REGISTER, PROGRAM_START_ADDRESS},
+    constants::{
+        DISPLAY_HEIGHT, DISPLAY_WIDTH, FLAG_REGISTER, OPCODE_SIZE, PROGRAM_START_ADDRESS,
+        STACK_DEPTH,
+    },
     error::Chip8Error,
     input::InputKind,
     keypad::Key,
@@ -394,8 +397,17 @@ impl<F: PrimeField32> State for StarkState<F> {
     fn push_stack(&mut self, addr: Address) {
         let curr_row = &mut self.trace.cpu.curr_row;
         let next_row = &mut self.trace.cpu.next_row;
+        curr_row.stack[self.state.stack_pointer as usize] =
+            F::from_canonical_u16(self.state.program_counter());
         curr_row.stack_pointer += F::one();
-        curr_row.stack[self.state.stack_pointer as usize] = curr_row.program_counter;
+        // TODO: Move this to a helper function
+        for i in 0..STACK_DEPTH {
+            if i == self.state.stack_pointer as usize + 1 {
+                curr_row.stack_pointer_sel[i] = F::from_bool(true);
+            } else {
+                curr_row.stack_pointer_sel[i] = F::from_bool(false);
+            }
+        }
         next_row.program_counter = F::from_canonical_u16(addr);
 
         self.state.push_stack(addr)
@@ -405,16 +417,22 @@ impl<F: PrimeField32> State for StarkState<F> {
         let curr_row = &mut self.trace.cpu.curr_row;
         let next_row = &mut self.trace.cpu.next_row;
         curr_row.stack_pointer -= F::one();
+        for i in 0..STACK_DEPTH {
+            if i == self.state.stack_pointer as usize - 1 {
+                curr_row.stack_pointer_sel[i] = F::from_bool(true);
+            } else {
+                curr_row.stack_pointer_sel[i] = F::from_bool(false);
+            }
+        }
         next_row.program_counter =
-            F::from_canonical_u16(self.state.stack[self.state.stack_pointer as usize]);
+            F::from_canonical_u16(self.state.stack[self.state.stack_pointer as usize - 1]);
 
         self.state.pop_stack()
     }
 
     fn increment_program_counter(&mut self) {
-        let curr_row = &self.trace.cpu.curr_row;
         let next_row = &mut self.trace.cpu.next_row;
-        next_row.program_counter = curr_row.program_counter + F::one();
+        next_row.program_counter += F::from_canonical_u16(OPCODE_SIZE);
 
         self.state.increment_program_counter()
     }
@@ -453,6 +471,7 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
         self.next_row.stack = self.curr_row.stack;
         self.next_row.stack_pointer = self.curr_row.stack_pointer;
         self.next_row.keypad = self.curr_row.keypad;
+        self.next_row.stack_pointer_sel = self.curr_row.stack_pointer_sel;
 
         self.curr_row = self.next_row;
         self.next_row = CpuCols::default();

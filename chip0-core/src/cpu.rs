@@ -18,7 +18,7 @@ use std::{
 
 use crate::{prover::Prover, trace::StarkState};
 
-pub const TICKS_PER_PROOF: u64 = 1000;
+pub const TICKS_PER_PROOF: u64 = 61;
 
 pub struct StarkCpu<R, SC, P>
 where
@@ -124,12 +124,14 @@ where
 
     fn fetch(&mut self) -> Result<u16, Chip8Error> {
         let pc = self.state().program_counter();
+        self.state().trace.cpu.next_row.program_counter = Val::<SC>::from_canonical_u16(pc);
+
         let hi = self.state().memory(pc)?;
         let lo = self.state().memory(pc + 1)?;
 
-        self.state().increment_program_counter();
         let opcode = u16::from_be_bytes([hi, lo]);
 
+        self.state().increment_program_counter();
         let curr_row = &mut self.state().trace.cpu.curr_row;
         curr_row.opcode = Val::<SC>::from_canonical_u16(opcode);
 
@@ -380,7 +382,6 @@ where
             self.state().increment_clk()?;
 
             if (clk + 1) % TICKS_PER_PROOF == 0 {
-                // TODO: Generate trace in other thread
                 let trace = self.state.finalize_trace();
                 let prover = self.prover.clone();
                 tokio::spawn(async move { prover.prove(trace) });

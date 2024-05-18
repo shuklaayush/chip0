@@ -49,7 +49,14 @@ impl Prover<MyConfig> for DefaultProver<MyConfig> {
         let public_values = vec![];
 
         let mut challenger = self.new_challenger();
+        let proof = self
+            .machine
+            .prove(&self.config, &mut challenger, &pk, traces, &public_values);
+
+        // TODO: Avoid clone
+        let mut challenger = self.new_challenger();
         self.machine
-            .prove(&self.config, &mut challenger, &pk, traces, public_values);
+            .verify(&self.config, &mut challenger, &vk, &proof, &public_values)
+            .unwrap();
     }
 }

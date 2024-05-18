@@ -216,6 +216,9 @@ dependencies = [
  "ratatui",
  "serde",
  "tokio",
+ "tracing",
+ "tracing-forest",
+ "tracing-subscriber",
 ]
 
 [[package]]

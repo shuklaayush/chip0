@@ -18,7 +18,10 @@ chip8-core = { path = "../chip8-core" }
 p3-uni-stark = { workspace = true }
 p3-baby-bear = { workspace = true }
 
+tracing = { workspace = true }
 rand = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-forest = { workspace = true }
 
 p3-machine = { workspace = true }
 

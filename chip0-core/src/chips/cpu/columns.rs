@@ -11,6 +11,8 @@ use p3_derive::Headers;
 #[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct CpuCols<T> {
+    pub is_real: T,
+
     pub clk: T,
     pub opcode: T,
 
@@ -58,6 +60,8 @@ pub struct CpuCols<T> {
     pub sound_timer: T,
     pub keypad: [T; NUM_KEYS],
 
+    pub stack_pointer_sel: [T; STACK_DEPTH],
+
     pub x: T,
     pub y: T,
     pub n: T,
@@ -70,7 +74,23 @@ pub struct CpuCols<T> {
     // x <= i
     pub lte_x_sel: [T; NUM_REGISTERS],
 
-    pub is_real: T,
+    // pub is_equal_vx_nn: T,
+    // pub is_equal_vx_vy: T,
+    // pub or_vx_vy: T,
+    // pub and_vx_vy: T,
+    // pub xor_vx_vy: T,
+    // pub add_vx_vy: T,
+    // pub add_vx_vy_carry: T,
+    // pub sub_vx_vy: T,
+    // pub sub_vx_vy_borrow: T,
+    // pub shr_vx: T,
+    // pub shr_vx_flag: T,
+    // pub sub_vy_vx: T,
+    // pub sub_vy_vx_borrow: T,
+    // pub shl_vx: T,
+    // pub shl_vx_flag: T,
+    // pub is_key_pressed_vx: T,
+    // pub add_vi_vx: T,
     pub is_first: T,
     pub is_final: T,
 }
