@@ -1,4 +1,4 @@
-use chip8_core::constants::{FLAG_REGISTER, NUM_REGISTERS};
+use chip8_core::constants::{FLAG_REGISTER, NUM_KEYS, NUM_REGISTERS};
 use p3_air::VirtualPairCol;
 use p3_field::AbstractField;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
@@ -100,6 +100,17 @@ impl<F: AbstractField> InteractionChip<F> for CpuChip {
             count: VirtualPairCol::single_main(CPU_COL_MAP.lte_x_sel[i]),
             argument_index: self.bus_memory,
         }));
+
+        // TODO: keypad interactions
+        // interactions.extend((0..NUM_KEYS).map(|i| Interaction {
+        //     fields: vec![
+        //         VirtualPairCol::single_main(CPU_COL_MAP.clk),
+        //         VirtualPairCol::constant(F::from_canonical_usize(i)),
+        //         VirtualPairCol::single_main(CPU_COL_MAP.keypad[i]),
+        //     ],
+        //     count: VirtualPairCol::single_main(CPU_COL_MAP.keypad[i]),
+        //     argument_index: self.bus_memory,
+        // }));
 
         interactions
     }

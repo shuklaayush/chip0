@@ -11,6 +11,7 @@ use self::columns::CpuCols;
 pub struct CpuChip {
     pub bus_draw: usize,
     pub bus_memory: usize,
+    pub bus_keypad: usize,
 }
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for CpuChip {

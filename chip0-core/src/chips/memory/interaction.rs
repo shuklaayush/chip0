@@ -41,7 +41,14 @@ impl<F: AbstractField> InteractionChip<F> for MemoryChip {
     }
 
     fn receives(&self) -> Vec<Interaction<F>> {
-        vec![]
+        vec![Interaction {
+            fields: vec![
+                VirtualPairCol::single_main(MEMORY_COL_MAP.addr),
+                VirtualPairCol::single_main(MEMORY_COL_MAP.value),
+            ],
+            count: VirtualPairCol::single_main(MEMORY_COL_MAP.is_first_read),
+            argument_index: self.bus_memory_start,
+        }]
     }
 }
 

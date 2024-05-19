@@ -19,9 +19,9 @@ where
 }
 
 impl DefaultProver<MyConfig> {
-    pub fn new() -> Self {
+    pub fn new(rom: Vec<u8>) -> Self {
         Self {
-            machine: Chip0Machine::default(),
+            machine: Chip0Machine::new(rom),
             config: default_config(),
         }
     }

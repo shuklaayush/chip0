@@ -7,11 +7,12 @@ pub mod frame_buffer;
 // pub mod hash;
 pub mod keypad;
 pub mod memory;
+pub mod memory_start;
 pub mod range;
 
 use self::{
     cpu::CpuChip, draw::DrawChip, frame_buffer::FrameBufferChip, keypad::KeypadChip,
-    memory::MemoryChip, range::RangeChip,
+    memory::MemoryChip, memory_start::MemoryStartChip, range::RangeChip,
 };
 
 #[derive(Clone, Debug, EnumDispatch)]
@@ -22,4 +23,5 @@ pub enum Chip0MachineChip {
     Memory(MemoryChip),
     FrameBuffer(FrameBufferChip),
     Range(RangeChip),
+    MemoryStart(MemoryStartChip),
 }

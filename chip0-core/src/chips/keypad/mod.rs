@@ -8,7 +8,9 @@ use p3_stark::AirDebug;
 use self::columns::KeypadCols;
 
 #[derive(Clone, Debug)]
-pub struct KeypadChip {}
+pub struct KeypadChip {
+    pub bus_keypad: usize,
+}
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for KeypadChip {
     #[cfg(feature = "debug-trace")]

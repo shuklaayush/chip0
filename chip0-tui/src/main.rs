@@ -92,7 +92,7 @@ async fn main() -> Result<()> {
     };
 
     let seeded_rng = StdRng::seed_from_u64(args.random_seed.unwrap_or(random()));
-    let prover = DefaultProver::new();
+    let prover = DefaultProver::new(rom.clone());
     let cpu: StarkCpu<_, MyConfig, _> = StarkCpu::new(args.clk_freq, seeded_rng, prover);
     let mut chip8 = Chip8::new(cpu, inputs);
     let res = chip8

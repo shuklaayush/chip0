@@ -1,7 +1,7 @@
 use chip8_core::{
     constants::{
-        DISPLAY_HEIGHT, DISPLAY_WIDTH, FLAG_REGISTER, NUM_KEYS, OPCODE_SIZE, PROGRAM_START_ADDRESS,
-        STACK_DEPTH,
+        DISPLAY_HEIGHT, DISPLAY_WIDTH, FLAG_REGISTER, MEMORY_SIZE, NUM_KEYS, OPCODE_SIZE,
+        PROGRAM_START_ADDRESS, STACK_DEPTH,
     },
     error::Chip8Error,
     input::InputKind,
@@ -15,7 +15,7 @@ use p3_derive::AlignedBorrow;
 use p3_field::PrimeField32;
 use p3_matrix::dense::RowMajorMatrix;
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     sync::{Arc, RwLock},
 };
 
@@ -25,6 +25,7 @@ use crate::chips::{
     frame_buffer::columns::NUM_FRAME_BUFFER_COLS,
     keypad::columns::{KeypadCols, NUM_KEYPAD_COLS},
     memory::columns::{MemoryCols, NUM_MEMORY_COLS},
+    memory_start::columns::{MemoryStartCols, NUM_MEMORY_START_COLS},
     range::columns::{RangeCols, NUM_RANGE_COLS},
 };
 
@@ -59,6 +60,7 @@ pub struct PartialMachineTrace<F: PrimeField32> {
 impl<F: PrimeField32> PartialMachineTrace<F> {
     pub fn get_trace_matrices(mut self) -> Vec<Option<RowMajorMatrix<F>>> {
         let mut range_counts = BTreeMap::new();
+        let mut first_memory_reads = BTreeSet::new();
 
         self.memory.sort_by_key(|event| event.address);
         let mut memory_trace = vec![MemoryCols::default(); self.memory.len()];
@@ -80,6 +82,12 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             } else {
                 F::zero()
             };
+
+            if event.is_read == F::one() && (i == 0 || memory_trace[i].addr_unchanged == F::zero())
+            {
+                first_memory_reads.insert(event.address);
+                memory_trace[i].is_first_read = F::one();
+            }
 
             let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
             let diff_limb_hi = F::from_canonical_u32((diff.as_canonical_u32() >> 8) % (1 << 8));
@@ -142,6 +150,11 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
                 }
             })
             .collect_vec();
+        let memory_start_trace = (0..MEMORY_SIZE)
+            .map(|n| MemoryStartCols {
+                mult: F::from_bool(first_memory_reads.contains(&F::from_canonical_usize(n))),
+            })
+            .collect_vec();
 
         let cpu_matrix = self.cpu.to_trace_matrix(NUM_CPU_COLS);
         let draw_matrix = self.draw.to_trace_matrix(NUM_DRAW_COLS);
@@ -149,6 +162,7 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
         let memory_matrix = memory_trace.to_trace_matrix(NUM_MEMORY_COLS);
         let frame_buffer_matrix = frame_buffer_trace.to_trace_matrix(NUM_FRAME_BUFFER_COLS);
         let range_matrix = range_trace.to_trace_matrix(NUM_RANGE_COLS);
+        let memory_start_matrix = memory_start_trace.to_trace_matrix(NUM_MEMORY_START_COLS);
 
         vec![
             cpu_matrix,
@@ -157,6 +171,7 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             memory_matrix,
             frame_buffer_matrix,
             range_matrix,
+            memory_start_matrix,
         ]
     }
 }

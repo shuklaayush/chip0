@@ -10,6 +10,7 @@ use p3_derive::Headers;
 #[derive(AlignedBorrow, Default, Copy, Clone)]
 #[cfg_attr(feature = "debug-trace", derive(Headers))]
 pub struct KeypadCols<T> {
+    pub is_real: T,
     pub clk: T,
     pub index: T,
     pub value: T,
