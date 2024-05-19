@@ -10,7 +10,14 @@ use crate::chips::{
 #[derive(Default, Clone)]
 pub struct Chip0Machine {}
 
-pub enum Chip0MachineBus {}
+pub enum Chip0MachineBus {
+    DrawBus = 0,
+    KeypadBus = 1,
+    MemoryBus = 2,
+    FrameBufferBus = 3,
+    RangeBus = 4,
+    // HashBus = 5,
+}
 
 impl<'a, SC> Machine<'a, SC, Chip0MachineChip> for Chip0Machine
 where

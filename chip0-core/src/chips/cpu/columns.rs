@@ -95,7 +95,6 @@ pub struct CpuCols<T> {
     // pub sub_vy_vx_borrow: T,
     // pub shl_vx: T,
     // pub shl_vx_flag: T,
-    // pub is_key_pressed_vx: T,
     // pub add_vi_vx: T,
     pub is_first: T,
     pub is_final: T,

@@ -222,15 +222,18 @@ pub trait Cpu {
         x: Word,
     ) -> Result<(), Chip8Error> {
         let clk = self.state().clk()?;
-        'outer: while status.checked_read()?.is_ok() {
+
+        let mut pressed = false;
+        for i in 0..NUM_KEYS {
+            if self.state().key(i as u8) {
+                pressed = true;
+            }
+        }
+        while status.checked_read()?.is_ok() && !pressed {
             if let Some(event) = (*input_queue.checked_write()?).dequeue(clk) {
                 self.state().set_key(event.key, event.kind);
                 self.state().set_register(x, event.key as u8);
-            }
-            for i in 0..NUM_KEYS {
-                if self.state().key(i as u8) {
-                    break 'outer;
-                }
+                pressed = true;
             }
         }
         Ok(())

@@ -16,9 +16,9 @@ use std::{
     sync::{Arc, RwLock},
 };
 
-use crate::{prover::Prover, trace::StarkState};
+use crate::{chips::draw::columns::WORD_BITS, prover::Prover, trace::StarkState};
 
-pub const TICKS_PER_PROOF: u64 = 10000;
+pub const TICKS_PER_PROOF: u64 = 1000;
 
 pub struct StarkCpu<R, SC, P>
 where
@@ -86,6 +86,7 @@ where
         // Each row in loop
         let curr_row = &mut self.state().trace.draw.curr_row;
         curr_row.is_real = Val::<SC>::one();
+        curr_row.is_first = Val::<SC>::one();
         curr_row.clk = Val::<SC>::from_canonical_u64(clk);
         curr_row.register_x = Val::<SC>::from_canonical_u8(vx);
         curr_row.register_y = Val::<SC>::from_canonical_u8(vy);
@@ -114,6 +115,14 @@ where
                 curr_row.frame_buffer_y_x = Val::<SC>::from_bool(fb);
                 curr_row.flipped = Val::<SC>::from_bool(curr_flipped);
                 curr_row.register_flag = Val::<SC>::from_bool(flipped);
+
+                for i in 0..WORD_BITS {
+                    curr_row.pixels_bits[i] = Val::<SC>::from_canonical_u8((pixels >> i) & 1);
+                    curr_row.sel_7_minus_xs[i] = Val::<SC>::from_bool(i == 7 - xs as usize);
+                }
+                if ys == n - 1 && xs == 7 {
+                    curr_row.is_last = Val::<SC>::one();
+                }
 
                 self.state().trace.draw.add_curr_row_to_trace();
             }
