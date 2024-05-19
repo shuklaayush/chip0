@@ -28,9 +28,15 @@ where
         let cpu_chip = CpuChip {};
         let draw_chip = DrawChip {};
         let keypad_chip = KeypadChip {};
-        let memory_chip = MemoryChip {};
-        let frame_buffer_chip = FrameBufferChip {};
-        let range_chip = RangeChip {};
+        let memory_chip = MemoryChip {
+            bus_range: Chip0MachineBus::RangeBus as usize,
+        };
+        let frame_buffer_chip = FrameBufferChip {
+            bus_range: Chip0MachineBus::RangeBus as usize,
+        };
+        let range_chip = RangeChip {
+            bus_range: Chip0MachineBus::RangeBus as usize,
+        };
 
         vec![
             Chip0MachineChip::Cpu(cpu_chip),

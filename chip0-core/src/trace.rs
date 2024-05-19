@@ -70,30 +70,31 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             memory_trace[i].is_read = event.is_read;
             memory_trace[i].is_write = F::one() - event.is_read;
 
-            if i > 0 {
-                let diff = if memory_trace[i].addr == memory_trace[i - 1].addr {
+            let diff = if i > 0 {
+                if memory_trace[i].addr == memory_trace[i - 1].addr {
                     memory_trace[i].addr_unchanged = F::one();
                     memory_trace[i].clk - memory_trace[i - 1].clk
                 } else {
                     memory_trace[i].addr - memory_trace[i - 1].addr - F::one()
-                };
+                }
+            } else {
+                F::zero()
+            };
 
-                let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
-                let diff_limb_hi =
-                    F::from_canonical_u32((diff.as_canonical_u32() >> 16) % (1 << 8));
+            let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
+            let diff_limb_hi = F::from_canonical_u32((diff.as_canonical_u32() >> 8) % (1 << 8));
 
-                memory_trace[i].diff_limb_lo = diff_limb_lo;
-                memory_trace[i].diff_limb_hi = diff_limb_hi;
+            memory_trace[i].diff_limb_lo = diff_limb_lo;
+            memory_trace[i].diff_limb_hi = diff_limb_hi;
 
-                range_counts
-                    .entry(diff_limb_lo)
-                    .and_modify(|count| *count += F::one())
-                    .or_insert(F::one());
-                range_counts
-                    .entry(diff_limb_hi)
-                    .and_modify(|count| *count += F::one())
-                    .or_insert(F::one());
-            }
+            range_counts
+                .entry(diff_limb_lo)
+                .and_modify(|count| *count += F::one())
+                .or_insert(F::one());
+            range_counts
+                .entry(diff_limb_hi)
+                .and_modify(|count| *count += F::one())
+                .or_insert(F::one());
         }
 
         self.frame_buffer.sort_by_key(|event| event.address);
@@ -106,32 +107,33 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             frame_buffer_trace[i].is_read = event.is_read;
             frame_buffer_trace[i].is_write = F::one() - event.is_read;
 
-            if i > 0 {
-                let diff = if frame_buffer_trace[i].addr == frame_buffer_trace[i - 1].addr {
+            let diff = if i > 0 {
+                if frame_buffer_trace[i].addr == frame_buffer_trace[i - 1].addr {
                     frame_buffer_trace[i].addr_unchanged = F::one();
                     frame_buffer_trace[i].clk - frame_buffer_trace[i - 1].clk
                 } else {
                     frame_buffer_trace[i].addr - frame_buffer_trace[i - 1].addr - F::one()
-                };
-                let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
-                let diff_limb_hi =
-                    F::from_canonical_u32((diff.as_canonical_u32() >> 16) % (1 << 8));
+                }
+            } else {
+                F::zero()
+            };
+            let diff_limb_lo = F::from_canonical_u32(diff.as_canonical_u32() % (1 << 8));
+            let diff_limb_hi = F::from_canonical_u32((diff.as_canonical_u32() >> 8) % (1 << 8));
 
-                frame_buffer_trace[i].diff_limb_lo = diff_limb_lo;
-                frame_buffer_trace[i].diff_limb_hi = diff_limb_hi;
+            frame_buffer_trace[i].diff_limb_lo = diff_limb_lo;
+            frame_buffer_trace[i].diff_limb_hi = diff_limb_hi;
 
-                range_counts
-                    .entry(diff_limb_lo)
-                    .and_modify(|count| *count += F::one())
-                    .or_insert(F::one());
-                range_counts
-                    .entry(diff_limb_hi)
-                    .and_modify(|count| *count += F::one())
-                    .or_insert(F::one());
-            }
+            range_counts
+                .entry(diff_limb_lo)
+                .and_modify(|count| *count += F::one())
+                .or_insert(F::one());
+            range_counts
+                .entry(diff_limb_hi)
+                .and_modify(|count| *count += F::one())
+                .or_insert(F::one());
         }
 
-        let range_trace = (0..256)
+        let range_trace = (0..(1 << 8))
             .map(|n| {
                 let n = F::from_canonical_u32(n);
                 RangeCols {

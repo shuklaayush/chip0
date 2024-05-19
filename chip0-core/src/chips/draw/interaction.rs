@@ -1,5 +1,8 @@
+use p3_air::VirtualPairCol;
 use p3_field::AbstractField;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+
+use crate::chips::draw::columns::DRAW_COL_MAP;
 
 use super::DrawChip;
 

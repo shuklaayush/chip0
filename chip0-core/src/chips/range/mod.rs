@@ -8,7 +8,9 @@ use p3_stark::AirDebug;
 use self::columns::RangeCols;
 
 #[derive(Clone, Debug)]
-pub struct RangeChip {}
+pub struct RangeChip {
+    pub bus_range: usize,
+}
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for RangeChip {
     #[cfg(feature = "debug-trace")]

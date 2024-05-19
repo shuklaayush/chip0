@@ -1,5 +1,8 @@
+use p3_air::VirtualPairCol;
 use p3_field::AbstractField;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+
+use crate::chips::range::columns::RANGE_COL_MAP;
 
 use super::RangeChip;
 
@@ -9,7 +12,11 @@ impl<F: AbstractField> InteractionChip<F> for RangeChip {
     }
 
     fn receives(&self) -> Vec<Interaction<F>> {
-        vec![]
+        vec![Interaction {
+            fields: vec![VirtualPairCol::single_main(RANGE_COL_MAP.value)],
+            count: VirtualPairCol::single_main(RANGE_COL_MAP.mult),
+            argument_index: self.bus_range,
+        }]
     }
 }
 

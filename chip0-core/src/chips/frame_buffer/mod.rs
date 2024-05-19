@@ -8,7 +8,9 @@ use p3_stark::AirDebug;
 use self::columns::FrameBufferCols;
 
 #[derive(Clone, Debug)]
-pub struct FrameBufferChip {}
+pub struct FrameBufferChip {
+    pub bus_range: usize,
+}
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for FrameBufferChip {
     #[cfg(feature = "debug-trace")]
