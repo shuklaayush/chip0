@@ -197,6 +197,7 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
         // program counter
         builder
             .when_transition()
+            .when(next.is_real)
             .when(
                 local.is_clear_display
                     + local.is_load

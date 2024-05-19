@@ -9,6 +9,7 @@ use self::columns::FrameBufferCols;
 
 #[derive(Clone, Debug)]
 pub struct FrameBufferChip {
+    pub bus_frame_buffer: usize,
     pub bus_range: usize,
 }
 

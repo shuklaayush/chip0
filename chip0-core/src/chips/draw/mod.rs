@@ -8,7 +8,9 @@ use p3_stark::AirDebug;
 use self::columns::DrawCols;
 
 #[derive(Clone, Debug)]
-pub struct DrawChip {}
+pub struct DrawChip {
+    pub bus_frame_buffer: usize,
+}
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for DrawChip {
     #[cfg(feature = "debug-trace")]

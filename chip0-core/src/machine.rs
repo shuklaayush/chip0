@@ -26,12 +26,15 @@ where
 {
     fn chips(&self) -> Vec<Chip0MachineChip> {
         let cpu_chip = CpuChip {};
-        let draw_chip = DrawChip {};
+        let draw_chip = DrawChip {
+            bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
+        };
         let keypad_chip = KeypadChip {};
         let memory_chip = MemoryChip {
             bus_range: Chip0MachineBus::RangeBus as usize,
         };
         let frame_buffer_chip = FrameBufferChip {
+            bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
             bus_range: Chip0MachineBus::RangeBus as usize,
         };
         let range_chip = RangeChip {
