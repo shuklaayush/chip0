@@ -488,6 +488,9 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
         }
         self.curr_row.diff_vx_nn_inv = (vx - self.curr_row.nn).try_inverse().unwrap_or_default();
         self.curr_row.is_equal_vx_nn = F::from_bool(vx == self.curr_row.nn);
+        self.curr_row.vx_bcd0 = F::from_canonical_u64((vx.as_canonical_u64() / 100) % 10);
+        self.curr_row.vx_bcd1 = F::from_canonical_u64((vx.as_canonical_u64() / 10) % 10);
+        self.curr_row.vx_bcd2 = F::from_canonical_u64(vx.as_canonical_u64() % 10);
 
         self.curr_row.diff_vx_vy_inv = (vx - vy).try_inverse().unwrap_or_default();
         self.curr_row.is_equal_vx_vy = F::from_bool(vx == vy);

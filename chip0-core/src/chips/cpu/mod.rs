@@ -10,6 +10,7 @@ use self::columns::CpuCols;
 #[derive(Clone, Debug)]
 pub struct CpuChip {
     pub bus_draw: usize,
+    pub bus_memory: usize,
 }
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for CpuChip {

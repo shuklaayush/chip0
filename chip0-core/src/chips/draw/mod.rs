@@ -11,6 +11,7 @@ use self::columns::DrawCols;
 pub struct DrawChip {
     pub bus_draw: usize,
     pub bus_frame_buffer: usize,
+    pub bus_memory: usize,
 }
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for DrawChip {

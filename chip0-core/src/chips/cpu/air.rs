@@ -313,5 +313,10 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
                 next.program_counter,
                 local.program_counter + AB::Expr::from_canonical_u16(OPCODE_SIZE).double(),
             );
+
+        // lte_x_sel only on 2 opcodes
+        // builder.when(local.is_store_registers + local.is_load_memory).assert
+
+        // TODO: Constrain bcd_i
     }
 }

@@ -16,6 +16,9 @@ pub struct DrawCols<T> {
     pub is_first: T,
     pub is_last: T,
 
+    // TODO: Replace with is_xs_0
+    pub is_first_inner: T,
+
     pub clk: T,
     pub register_x: T,
     pub register_y: T,

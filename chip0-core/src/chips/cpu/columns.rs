@@ -14,6 +14,9 @@ pub struct CpuCols<T> {
     pub is_real: T,
 
     pub clk: T,
+    pub opcode_hi: T,
+    pub opcode_lo: T,
+
     pub opcode: T,
 
     pub is_clear_display: T,
@@ -73,6 +76,10 @@ pub struct CpuCols<T> {
 
     pub vx: T,
     pub vy: T,
+
+    pub vx_bcd0: T,
+    pub vx_bcd1: T,
+    pub vx_bcd2: T,
 
     pub vx_sel: [T; NUM_KEYS],
 

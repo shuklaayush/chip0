@@ -10,6 +10,7 @@ use self::columns::MemoryCols;
 #[derive(Clone, Debug)]
 pub struct MemoryChip {
     pub bus_range: usize,
+    pub bus_memory: usize,
 }
 
 impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for MemoryChip {

@@ -10,6 +10,18 @@ impl<F: AbstractField> InteractionChip<F> for MemoryChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         vec![
             Interaction {
+                fields: vec![
+                    VirtualPairCol::single_main(MEMORY_COL_MAP.addr),
+                    VirtualPairCol::single_main(MEMORY_COL_MAP.clk),
+                    VirtualPairCol::single_main(MEMORY_COL_MAP.value),
+                ],
+                count: VirtualPairCol::sum_main(vec![
+                    MEMORY_COL_MAP.is_read,
+                    MEMORY_COL_MAP.is_write,
+                ]),
+                argument_index: self.bus_memory,
+            },
+            Interaction {
                 fields: vec![VirtualPairCol::single_main(MEMORY_COL_MAP.diff_limb_lo)],
                 count: VirtualPairCol::sum_main(vec![
                     MEMORY_COL_MAP.is_read,

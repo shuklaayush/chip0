@@ -64,6 +64,15 @@ impl<F: AbstractField> InteractionChip<F> for DrawChip {
                 count: VirtualPairCol::single_main(DRAW_COL_MAP.pixel),
                 argument_index: self.bus_frame_buffer,
             },
+            Interaction {
+                fields: vec![
+                    VirtualPairCol::sum_main(vec![DRAW_COL_MAP.index_register, DRAW_COL_MAP.ys]),
+                    VirtualPairCol::single_main(DRAW_COL_MAP.clk),
+                    VirtualPairCol::single_main(DRAW_COL_MAP.pixels),
+                ],
+                count: VirtualPairCol::single_main(DRAW_COL_MAP.is_first_inner),
+                argument_index: self.bus_memory,
+            },
         ]
     }
 }

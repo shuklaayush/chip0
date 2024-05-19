@@ -70,6 +70,6 @@ impl<AB: AirBuilder> Air<AB> for DrawChip {
                 .map(|(b, sel)| b * sel)
                 .sum::<AB::Expr>(),
         );
-        // TODO: Constrain x, y
+        // TODO: Constrain x, y, is_first_inner
     }
 }

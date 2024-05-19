@@ -93,6 +93,8 @@ where
         curr_row.index_register = Val::<SC>::from_canonical_u16(vi);
 
         for ys in 0..n {
+            self.state().trace.draw.curr_row.is_first_inner = Val::<SC>::one();
+
             let y = (y0 + ys as usize) % DISPLAY_HEIGHT;
             let pixels = self.state().memory(vi + ys as u16)?;
             for xs in 0..8u8 {
@@ -142,6 +144,8 @@ where
 
         self.state().increment_program_counter();
         let curr_row = &mut self.state().trace.cpu.curr_row;
+        curr_row.opcode_hi = Val::<SC>::from_canonical_u8(hi);
+        curr_row.opcode_lo = Val::<SC>::from_canonical_u8(lo);
         curr_row.opcode = Val::<SC>::from_canonical_u16(opcode);
 
         Ok(opcode)
@@ -163,7 +167,6 @@ where
         for i in 0..NUM_REGISTERS {
             curr_row.x_sel[i] = Val::<SC>::from_bool(x == i as u8);
             curr_row.y_sel[i] = Val::<SC>::from_bool(y == i as u8);
-            curr_row.lte_x_sel[i] = Val::<SC>::from_bool((i as u8) <= x);
         }
 
         curr_row.n = Val::<SC>::from_canonical_u8(n);
@@ -350,11 +353,17 @@ where
                 }
                 // 0xFX55
                 0xF055 => {
+                    for i in 0..NUM_REGISTERS {
+                        curr_row.lte_x_sel[i] = Val::<SC>::from_bool((i as u8) <= x);
+                    }
                     curr_row.is_store_registers = Val::<SC>::one();
                     Ok(Instruction::StoreRegisters(x))
                 }
                 // 0xFX65
                 0xF065 => {
+                    for i in 0..NUM_REGISTERS {
+                        curr_row.lte_x_sel[i] = Val::<SC>::from_bool((i as u8) <= x);
+                    }
                     curr_row.is_load_memory = Val::<SC>::one();
                     Ok(Instruction::LoadMemory(x))
                 }
