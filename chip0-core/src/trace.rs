@@ -1,6 +1,6 @@
 use chip8_core::{
     constants::{
-        DISPLAY_HEIGHT, DISPLAY_WIDTH, FLAG_REGISTER, OPCODE_SIZE, PROGRAM_START_ADDRESS,
+        DISPLAY_HEIGHT, DISPLAY_WIDTH, FLAG_REGISTER, NUM_KEYS, OPCODE_SIZE, PROGRAM_START_ADDRESS,
         STACK_DEPTH,
     },
     error::Chip8Error,
@@ -464,6 +464,30 @@ impl<F: PrimeField32> State for StarkState<F> {
 
 impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
     pub fn add_curr_row_to_trace(&mut self) {
+        let vx = self
+            .curr_row
+            .x_sel
+            .iter()
+            .zip_eq(self.curr_row.registers.iter())
+            .map(|(&sel, &register)| sel * register)
+            .sum::<F>();
+        let vy = self
+            .curr_row
+            .y_sel
+            .iter()
+            .zip_eq(self.curr_row.registers.iter())
+            .map(|(&sel, &register)| sel * register)
+            .sum::<F>();
+
+        for i in 0..NUM_KEYS {
+            self.curr_row.vx_sel[i] = F::from_bool(vx == F::from_canonical_usize(i));
+        }
+        self.curr_row.diff_vx_nn_inv = (vx - self.curr_row.nn).try_inverse().unwrap_or_default();
+        self.curr_row.is_equal_vx_nn = F::from_bool(vx == self.curr_row.nn);
+
+        self.curr_row.diff_vx_vy_inv = (vx - vy).try_inverse().unwrap_or_default();
+        self.curr_row.is_equal_vx_vy = F::from_bool(vx == vy);
+
         self.trace.push(self.curr_row);
         // Copy state
         self.next_row.registers = self.curr_row.registers;

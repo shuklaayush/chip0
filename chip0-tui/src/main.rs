@@ -42,7 +42,7 @@ async fn main() -> Result<()> {
     let terminal = setup_terminal(args.headless)?;
 
     let (inputs, input_writer) = if let Some(input_file) = &args.input_file {
-        if args.overwrite {
+        if !input_file.exists() || args.overwrite {
             let writer = Writer::from_path(input_file)?;
             (vec![], Some(writer))
         } else {

@@ -7,7 +7,9 @@ mod simple;
 pub use simple::SimpleCpu;
 
 use crate::{
-    constants::{DISPLAY_HEIGHT, DISPLAY_WIDTH, FONTSET_START_ADDRESS, FONT_SIZE, TICKS_PER_TIMER},
+    constants::{
+        DISPLAY_HEIGHT, DISPLAY_WIDTH, FONTSET_START_ADDRESS, FONT_SIZE, NUM_KEYS, TICKS_PER_TIMER,
+    },
     error::Chip8Error,
     input::{InputEvent, InputQueue},
     instruction::Instruction,
@@ -220,11 +222,15 @@ pub trait Cpu {
         x: Word,
     ) -> Result<(), Chip8Error> {
         let clk = self.state().clk()?;
-        while status.checked_read()?.is_ok() {
+        'outer: while status.checked_read()?.is_ok() {
             if let Some(event) = (*input_queue.checked_write()?).dequeue(clk) {
                 self.state().set_key(event.key, event.kind);
                 self.state().set_register(x, event.key as u8);
-                break;
+            }
+            for i in 0..NUM_KEYS {
+                if self.state().key(i as u8) {
+                    break 'outer;
+                }
             }
         }
         Ok(())

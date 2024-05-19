@@ -71,11 +71,17 @@ pub struct CpuCols<T> {
     pub x_sel: [T; NUM_REGISTERS],
     pub y_sel: [T; NUM_REGISTERS],
 
+    pub vx_sel: [T; NUM_KEYS],
+
     // x <= i
     pub lte_x_sel: [T; NUM_REGISTERS],
 
-    // pub is_equal_vx_nn: T,
-    // pub is_equal_vx_vy: T,
+    pub diff_vx_nn_inv: T,
+    pub is_equal_vx_nn: T,
+
+    pub diff_vx_vy_inv: T,
+    pub is_equal_vx_vy: T,
+
     // pub or_vx_vy: T,
     // pub and_vx_vy: T,
     // pub xor_vx_vy: T,
