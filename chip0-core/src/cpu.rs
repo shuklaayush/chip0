@@ -18,7 +18,7 @@ use std::{
 
 use crate::{chips::draw::columns::WORD_BITS, prover::Prover, trace::StarkState};
 
-pub const TICKS_PER_PROOF: u64 = 1000;
+pub const TICKS_PER_PROOF: u64 = 10000;
 
 pub struct StarkCpu<R, SC, P>
 where
@@ -379,7 +379,7 @@ where
         input_queue: Arc<RwLock<VecDeque<(u64, InputEvent)>>>,
     ) {
         // let mut prover_handle = None;
-        run_loop(status.clone(), self.frequency(), move |_| {
+        run_loop(status.clone(), self.frequency(), |_| {
             let clk = self.state().clk()?;
 
             let curr_row = &mut self.state().trace.cpu.curr_row;
@@ -399,20 +399,11 @@ where
 
             self.state().increment_clk()?;
 
-            if (clk + 1) % TICKS_PER_PROOF == 0 {
-                let trace = self.state.finalize_trace();
-                let prover = self.prover.clone();
-                tokio::spawn(async move { prover.prove(trace) });
-
-                self.op_wait_key_press(status.clone(), input_queue.clone(), 0)?;
-            }
-
             Ok(())
         });
-        // if let Some(prover_handle) = prover_handle {
-        //     prover_handle
-        //         .await
-        //         .map_err(|e| Chip8Error::AsyncAwaitError(e.to_string()));
-        // }
+
+        let trace = self.state.finalize_trace();
+        let prover = self.prover.clone();
+        tokio::spawn(async move { prover.prove(trace) });
     }
 }

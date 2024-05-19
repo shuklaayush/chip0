@@ -34,7 +34,7 @@ impl<AB: AirBuilder> Air<AB> for DrawChip {
             .assert_eq(local.ys, AB::Expr::zero());
         builder
             .when(local.is_first)
-            .assert_eq(local.register_flag, AB::Expr::zero());
+            .assert_eq(local.register_flag, local.pixel * local.frame_buffer_y_x);
 
         // Constraint clk
         builder
@@ -55,7 +55,7 @@ impl<AB: AirBuilder> Air<AB> for DrawChip {
             .assert_eq(local.flipped, local.pixel * local.frame_buffer_y_x);
         builder
             .when_transition()
-            .when_ne(next.is_first, AB::Expr::one())
+            .when_ne(local.is_last, AB::Expr::one())
             .assert_eq(
                 next.register_flag,
                 local.register_flag + next.pixel * next.frame_buffer_y_x,
