@@ -9,6 +9,7 @@ use self::columns::DrawCols;
 
 #[derive(Clone, Debug)]
 pub struct DrawChip {
+    pub bus_draw: usize,
     pub bus_frame_buffer: usize,
 }
 

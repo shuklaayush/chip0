@@ -25,8 +25,11 @@ where
     Val<SC>: PrimeField32,
 {
     fn chips(&self) -> Vec<Chip0MachineChip> {
-        let cpu_chip = CpuChip {};
+        let cpu_chip = CpuChip {
+            bus_draw: Chip0MachineBus::DrawBus as usize,
+        };
         let draw_chip = DrawChip {
+            bus_draw: Chip0MachineBus::DrawBus as usize,
             bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
         };
         let keypad_chip = KeypadChip {};

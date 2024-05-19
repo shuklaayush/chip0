@@ -481,6 +481,8 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
             .map(|(&sel, &register)| sel * register)
             .sum::<F>();
 
+        self.curr_row.vx = vx;
+        self.curr_row.vy = vy;
         for i in 0..NUM_KEYS {
             self.curr_row.vx_sel[i] = F::from_bool(vx == F::from_canonical_usize(i));
         }

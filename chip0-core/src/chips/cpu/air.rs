@@ -136,18 +136,24 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
                 .sum::<AB::Expr>(),
         );
 
-        let vx = local
-            .x_sel
-            .iter()
-            .zip_eq(local.registers.iter())
-            .map(|(&sel, &register)| sel * register)
-            .sum::<AB::Expr>();
-        let vy = local
-            .y_sel
-            .iter()
-            .zip_eq(local.registers.iter())
-            .map(|(&sel, &register)| sel * register)
-            .sum::<AB::Expr>();
+        builder.assert_eq(
+            local.vx,
+            local
+                .x_sel
+                .iter()
+                .zip_eq(local.registers.iter())
+                .map(|(&sel, &register)| sel * register)
+                .sum::<AB::Expr>(),
+        );
+        builder.assert_eq(
+            local.vy,
+            local
+                .y_sel
+                .iter()
+                .zip_eq(local.registers.iter())
+                .map(|(&sel, &register)| sel * register)
+                .sum::<AB::Expr>(),
+        );
 
         // keypad selector
         for i in 0..NUM_KEYS {
@@ -159,7 +165,7 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
         builder
             .when(local.is_skip_key_pressed + local.is_skip_key_not_pressed)
             .assert_eq(
-                vx.clone(),
+                local.vx,
                 local
                     .vx_sel
                     .into_iter()
@@ -175,7 +181,7 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
             .sum::<AB::Expr>();
 
         // is_equal_vx_nn
-        let diff_vx_nn = vx.clone() - local.nn;
+        let diff_vx_nn = local.vx - local.nn;
         builder.when(local.is_real).assert_eq(
             AB::Expr::one() - diff_vx_nn.clone() * local.diff_vx_nn_inv,
             local.is_equal_vx_nn,
@@ -185,7 +191,7 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
             .assert_zero(local.is_equal_vx_nn * diff_vx_nn);
 
         // is_equal_vx_vy
-        let diff_vx_vy = vx - vy;
+        let diff_vx_vy = local.vx - local.vy;
         builder.when(local.is_real).assert_eq(
             AB::Expr::one() - diff_vx_vy.clone() * local.diff_vx_vy_inv,
             local.is_equal_vx_vy,

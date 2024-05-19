@@ -71,6 +71,9 @@ pub struct CpuCols<T> {
     pub x_sel: [T; NUM_REGISTERS],
     pub y_sel: [T; NUM_REGISTERS],
 
+    pub vx: T,
+    pub vy: T,
+
     pub vx_sel: [T; NUM_KEYS],
 
     // x <= i

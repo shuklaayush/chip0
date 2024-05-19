@@ -9,11 +9,28 @@ use super::DrawChip;
 
 impl<F: AbstractField> InteractionChip<F> for DrawChip {
     fn sends(&self) -> Vec<Interaction<F>> {
-        vec![]
+        vec![Interaction {
+            fields: vec![
+                VirtualPairCol::single_main(DRAW_COL_MAP.clk),
+                VirtualPairCol::single_main(DRAW_COL_MAP.register_flag),
+            ],
+            count: VirtualPairCol::single_main(DRAW_COL_MAP.is_last),
+            argument_index: self.bus_draw,
+        }]
     }
 
     fn receives(&self) -> Vec<Interaction<F>> {
         vec![
+            Interaction {
+                fields: vec![
+                    VirtualPairCol::single_main(DRAW_COL_MAP.clk),
+                    VirtualPairCol::single_main(DRAW_COL_MAP.index_register),
+                    VirtualPairCol::single_main(DRAW_COL_MAP.register_x),
+                    VirtualPairCol::single_main(DRAW_COL_MAP.register_y),
+                ],
+                count: VirtualPairCol::single_main(DRAW_COL_MAP.is_first),
+                argument_index: self.bus_draw,
+            },
             Interaction {
                 fields: vec![
                     VirtualPairCol::new_main(
