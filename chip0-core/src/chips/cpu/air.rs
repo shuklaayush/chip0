@@ -1,4 +1,4 @@
-use chip8_core::constants::OPCODE_SIZE;
+use chip8_core::constants::{NUM_REGISTERS, OPCODE_SIZE};
 use core::borrow::Borrow;
 use itertools::Itertools;
 use p3_air::{Air, AirBuilder, BaseAir};
@@ -187,5 +187,37 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
         //         next.program_counter,
         //         local.program_counter + AB::Expr::from_canonical_u16(OPCODE_SIZE),
         //     );
+
+        // register selectors
+        for i in 0..NUM_REGISTERS {
+            builder.assert_bool(local.x_sel[i]);
+            builder.assert_bool(local.y_sel[i]);
+            // TODO: Add more constraints
+            builder.assert_bool(local.lte_x_sel[i]);
+        }
+        builder
+            .when(local.is_real)
+            .assert_one(local.x_sel.into_iter().map(|x| x.into()).sum::<AB::Expr>());
+        builder
+            .when(local.is_real)
+            .assert_one(local.y_sel.into_iter().map(|x| x.into()).sum::<AB::Expr>());
+        builder.when(local.is_real).assert_eq(
+            local.x,
+            local
+                .x_sel
+                .into_iter()
+                .enumerate()
+                .map(|(i, x)| AB::Expr::from_canonical_usize(i) * x)
+                .sum::<AB::Expr>(),
+        );
+        builder.when(local.is_real).assert_eq(
+            local.y,
+            local
+                .y_sel
+                .into_iter()
+                .enumerate()
+                .map(|(i, y)| AB::Expr::from_canonical_usize(i) * y)
+                .sum::<AB::Expr>(),
+        );
     }
 }
