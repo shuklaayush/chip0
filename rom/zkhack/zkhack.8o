@@ -1,0 +1,76 @@
+: main
+  clear                       # Address 512 / 0x200
+
+  i := zkhack-z               # Address 514 / 0x202
+  v0 := 12                    # Address 516 / 0x204
+  v1 := 12
+  sprite v0 v1 7             # Address 520 / 0x208
+
+  v0 += 6                     # Address 522 / 0x20A
+  i := zkhack-k
+  sprite v0 v1 7             # Address 520 / 0x208
+
+  v0 += 9
+  i := zkhack-h
+  sprite v0 v1 7
+
+  v0 += 6
+  i := zkhack-a
+  sprite v0 v1 7
+
+  v0 += 6
+  i := zkhack-c
+  sprite v0 v1 7
+
+  v0 += 6
+  i := zkhack-k
+  sprite v0 v1 7
+
+	v2 := key
+
+  loop again                  # Address 552 / 0x228
+
+: zkhack-z
+0b11111000
+0b00001000
+0b00010000
+0b00100000
+0b01000000
+0b10000000
+0b11111000
+
+: zkhack-k
+0b10001000
+0b10010000
+0b11100000
+0b10010000
+0b10001000
+0b10001000
+0b10001000
+
+: zkhack-h
+0b10001000
+0b10001000
+0b11111000
+0b10001000
+0b10001000
+0b10001000
+0b10001000
+
+: zkhack-a
+0b01110000
+0b10001000
+0b11111000
+0b10001000
+0b10001000
+0b10001000
+0b10001000
+
+: zkhack-c
+0b01110000
+0b10001000
+0b10000000
+0b10000000
+0b10000000
+0b10001000
+0b01110000
