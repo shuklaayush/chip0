@@ -3,7 +3,7 @@ mod drivers;
 mod terminal;
 
 use args::CmdArgs;
-use chip0_core::{cpu::StarkCpu, prover::DefaultProver};
+use chip0_core::{config::MyConfig, cpu::StarkCpu, prover::DefaultProver};
 use chip8_core::{
     input::{InputEvent, InputKind},
     keypad::Key,
@@ -13,7 +13,6 @@ use clap::Parser;
 use csv::{Reader, Writer, WriterBuilder};
 use drivers::input::CsvRecord;
 use eyre::Result;
-use p3_machine::config::MyConfig;
 use rand::{random, rngs::StdRng, SeedableRng};
 use std::fs::{self, OpenOptions};
 use terminal::{restore_terminal, setup_terminal};

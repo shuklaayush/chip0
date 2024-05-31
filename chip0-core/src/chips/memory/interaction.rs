@@ -1,12 +1,12 @@
 use p3_air::VirtualPairCol;
-use p3_field::AbstractField;
+use p3_field::Field;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
 
 use crate::chips::memory::columns::MEMORY_COL_MAP;
 
 use super::MemoryChip;
 
-impl<F: AbstractField> InteractionChip<F> for MemoryChip {
+impl<F: Field> InteractionChip<F> for MemoryChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         vec![
             Interaction {

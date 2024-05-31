@@ -3,31 +3,31 @@ members = ["chip0-core", "chip0-tui", "chip8-core"]
 resolver = "2"
 
 [workspace.dependencies]
-p3-air = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-baby-bear = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-challenger = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-commit = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-dft = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-field = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-fri = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-goldilocks = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-keccak = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-keccak-air = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-matrix = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-maybe-rayon = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-mds = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-merkle-tree = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-poseidon2 = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-symmetric = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-uni-stark = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
-p3-util = { git = "https://github.com/shuklaayush/Plonky3.git", branch = "feat/update-visibility" }
+p3-air = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-baby-bear = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-challenger = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-commit = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-dft = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-field = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-fri = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-goldilocks = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-keccak = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-keccak-air = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-matrix = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-maybe-rayon = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-mds = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-merkle-tree = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-poseidon2 = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-symmetric = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-uni-stark = { git = "https://github.com/Plonky3/Plonky3.git" }
+p3-util = { git = "https://github.com/Plonky3/Plonky3.git" }
 
-p3-derive = { git = "https://github.com/shuklaayush/p3-test.git" }
-p3-interaction = { git = "https://github.com/shuklaayush/p3-test.git" }
-p3-stark = { git = "https://github.com/shuklaayush/p3-test.git", features = [
+p3-derive = { git = "https://github.com/shuklaayush/p3-utils.git" }
+p3-interaction = { git = "https://github.com/shuklaayush/p3-utils.git" }
+p3-stark = { git = "https://github.com/shuklaayush/p3-utils.git", features = [
     "debug-trace",
 ] }
-p3-machine = { git = "https://github.com/shuklaayush/p3-test.git", features = [
+p3-machine = { git = "https://github.com/shuklaayush/p3-utils.git", features = [
     "debug-trace",
 ] }
 
@@ -39,27 +39,3 @@ tracing = { version = "0.1.37" }
 tracing-subscriber = { version = "0.3.17", features = ["std", "env-filter"] }
 tracing-forest = { version = "0.1.6", features = ["ansi", "smallvec"] }
 rand = { version = "0.8.5" }
-
-# [patch."https://github.com/Plonky3/Plonky3"]
-[patch."https://github.com/shuklaayush/Plonky3"]
-p3-air = { path = "../../plonky2-ws/Plonky3/air" }
-p3-challenger = { path = "../../plonky2-ws/Plonky3/challenger" }
-p3-commit = { path = "../../plonky2-ws/Plonky3/commit" }
-p3-dft = { path = "../../plonky2-ws/Plonky3/dft" }
-p3-field = { path = "../../plonky2-ws/Plonky3/field" }
-p3-fri = { path = "../../plonky2-ws/Plonky3/fri" }
-p3-keccak = { path = "../../plonky2-ws/Plonky3/keccak" }
-p3-keccak-air = { path = "../../plonky2-ws/Plonky3/keccak-air" }
-p3-matrix = { path = "../../plonky2-ws/Plonky3/matrix" }
-p3-merkle-tree = { path = "../../plonky2-ws/Plonky3/merkle-tree" }
-p3-symmetric = { path = "../../plonky2-ws/Plonky3/symmetric" }
-p3-uni-stark = { path = "../../plonky2-ws/Plonky3/uni-stark" }
-
-[patch."https://github.com/shuklaayush/chip8-rs"]
-chip8-core = { path = "../chip8-rs/chip8-core" }
-
-[patch."https://github.com/shuklaayush/p3-test"]
-p3-derive = { path = "../../plonky2-ws/p3-test/derive" }
-p3-interaction = { path = "../../plonky2-ws/p3-test/interaction" }
-p3-stark = { path = "../../plonky2-ws/p3-test/stark" }
-p3-machine = { path = "../../plonky2-ws/p3-test/machine" }

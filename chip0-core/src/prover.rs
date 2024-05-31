@@ -1,12 +1,10 @@
 use p3_field::PrimeField32;
-use p3_machine::config::{default_challenger, default_config};
-use p3_machine::config::{Challenger, MyConfig};
 use p3_machine::machine::Machine;
 use p3_uni_stark::{StarkGenericConfig, Val};
 
-use crate::trace::PartialMachineTrace;
-
+use super::config::{default_challenger, default_config, Challenger, MyConfig};
 use super::machine::Chip0Machine;
+use super::trace::PartialMachineTrace;
 
 #[derive(Clone)]
 pub struct DefaultProver<SC>

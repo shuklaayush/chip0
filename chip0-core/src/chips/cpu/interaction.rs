@@ -1,13 +1,13 @@
 use chip8_core::constants::{FLAG_REGISTER, NUM_KEYS, NUM_REGISTERS};
 use p3_air::VirtualPairCol;
-use p3_field::AbstractField;
+use p3_field::Field;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
 
 use crate::chips::cpu::columns::CPU_COL_MAP;
 
 use super::CpuChip;
 
-impl<F: AbstractField> InteractionChip<F> for CpuChip {
+impl<F: Field> InteractionChip<F> for CpuChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         vec![Interaction {
             fields: vec![

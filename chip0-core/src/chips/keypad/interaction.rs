@@ -1,10 +1,10 @@
 use p3_air::VirtualPairCol;
-use p3_field::AbstractField;
+use p3_field::Field;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
 
 use super::{columns::KEYPAD_COL_MAP, KeypadChip};
 
-impl<F: AbstractField> InteractionChip<F> for KeypadChip {
+impl<F: Field> InteractionChip<F> for KeypadChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         vec![
             // Interaction {

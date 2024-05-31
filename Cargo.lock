@@ -152,9 +152,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.97"
+version = "1.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "099a5357d84c4c61eb35fc8eafa9a79a902c2f76911e5747ced4e032edd8d9b4"
+checksum = "41c270e7540d725e65ac7f1b212ac8ce349719624d7bcff99f8e2e488e8cf03f"
 
 [[package]]
 name = "cfg-if"
@@ -167,7 +167,7 @@ name = "chip0-core"
 version = "0.1.0"
 dependencies = [
  "chip8-core",
- "itertools",
+ "itertools 0.12.1",
  "p3-air",
  "p3-baby-bear",
  "p3-challenger",
@@ -181,14 +181,14 @@ dependencies = [
  "p3-keccak-air",
  "p3-machine",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
+ "p3-maybe-rayon",
  "p3-mds",
  "p3-merkle-tree",
  "p3-poseidon2",
  "p3-stark",
  "p3-symmetric",
  "p3-uni-stark",
- "p3-util 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
+ "p3-util",
  "rand",
  "rust_xlsxwriter",
  "serde",
@@ -294,18 +294,18 @@ dependencies = [
 
 [[package]]
 name = "crc32fast"
-version = "1.4.0"
+version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3855a8a784b474f333699ef2bbca9db2c4a1f6d9088a90a2d25b1eb53111eaa"
+checksum = "a97769d94ddab943e4510d138150169a2758b5ef3eb191a9ee688de3e23ef7b3"
 dependencies = [
  "cfg-if",
 ]
 
 [[package]]
 name = "crossbeam-utils"
-version = "0.8.19"
+version = "0.8.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "248e3bacc7dc6baa3b21e405ee045c3047101a49145e7e9eca583ab4c2ca5345"
+checksum = "22ec99545bb0ed0ea7bb9b8e1e9122ea386ff8a48c0922e43f36d45ab09e0e80"
 
 [[package]]
 name = "crossterm"
@@ -443,12 +443,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce23b50ad8242c51a442f3ff322d56b02f08852c77e4c0b4d3fd684abc89c683"
 
 [[package]]
-name = "indoc"
-version = "2.0.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5"
-
-[[package]]
 name = "is_terminal_polyfill"
 version = "1.70.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -459,6 +453,15 @@ name = "itertools"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "413ee7dfc52ee1a4949ceeb7dbc8a33f2d6c088194d9f922fb8318faf1f01186"
 dependencies = [
  "either",
 ]
@@ -627,6 +630,7 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 [[package]]
 name = "p3-air"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "p3-field",
  "p3-matrix",
@@ -635,7 +639,7 @@ dependencies = [
 [[package]]
 name = "p3-baby-bear"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility#488564c0d18ed09b4a373967b6d6d4b4a02c5a74"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "num-bigint",
  "p3-field",
@@ -649,29 +653,32 @@ dependencies = [
 [[package]]
 name = "p3-challenger"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "p3-field",
- "p3-maybe-rayon 0.1.0",
+ "p3-maybe-rayon",
  "p3-symmetric",
- "p3-util 0.1.0",
+ "p3-util",
  "tracing",
 ]
 
 [[package]]
 name = "p3-commit"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "p3-challenger",
  "p3-field",
  "p3-matrix",
- "p3-util 0.1.0",
+ "p3-util",
  "serde",
 ]
 
 [[package]]
 name = "p3-derive"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#2258c4b3639733c45d1c4161b41ed074b662faa3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -681,24 +688,26 @@ dependencies = [
 [[package]]
 name = "p3-dft"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "p3-field",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0",
- "p3-util 0.1.0",
+ "p3-maybe-rayon",
+ "p3-util",
  "tracing",
 ]
 
 [[package]]
 name = "p3-field"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "num-bigint",
  "num-integer",
  "num-traits",
  "nums",
- "p3-util 0.1.0",
+ "p3-util",
  "rand",
  "serde",
 ]
@@ -706,16 +715,17 @@ dependencies = [
 [[package]]
 name = "p3-fri"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "p3-challenger",
  "p3-commit",
  "p3-dft",
  "p3-field",
  "p3-interpolation",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0",
- "p3-util 0.1.0",
+ "p3-maybe-rayon",
+ "p3-util",
  "serde",
  "tracing",
 ]
@@ -723,6 +733,7 @@ dependencies = [
 [[package]]
 name = "p3-interaction"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#2258c4b3639733c45d1c4161b41ed074b662faa3"
 dependencies = [
  "p3-air",
  "p3-field",
@@ -732,15 +743,17 @@ dependencies = [
 [[package]]
 name = "p3-interpolation"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "p3-field",
  "p3-matrix",
- "p3-util 0.1.0",
+ "p3-util",
 ]
 
 [[package]]
 name = "p3-keccak"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "p3-symmetric",
  "tiny-keccak",
@@ -749,38 +762,32 @@ dependencies = [
 [[package]]
 name = "p3-keccak-air"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "p3-air",
  "p3-field",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0",
- "p3-util 0.1.0",
+ "p3-maybe-rayon",
+ "p3-util",
  "tracing",
 ]
 
 [[package]]
 name = "p3-machine"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#2258c4b3639733c45d1c4161b41ed074b662faa3"
 dependencies = [
- "itertools",
+ "itertools 0.12.1",
  "p3-air",
- "p3-baby-bear",
  "p3-challenger",
  "p3-commit",
- "p3-dft",
  "p3-field",
- "p3-fri",
  "p3-interaction",
- "p3-keccak",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
- "p3-mds",
- "p3-merkle-tree",
- "p3-poseidon2",
+ "p3-maybe-rayon",
  "p3-stark",
- "p3-symmetric",
  "p3-uni-stark",
- "p3-util 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
+ "p3-util",
  "rand",
  "rust_xlsxwriter",
  "serde",
@@ -790,11 +797,12 @@ dependencies = [
 [[package]]
 name = "p3-matrix"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "p3-field",
- "p3-maybe-rayon 0.1.0",
- "p3-util 0.1.0",
+ "p3-maybe-rayon",
+ "p3-util",
  "rand",
  "serde",
  "tracing",
@@ -803,37 +811,34 @@ dependencies = [
 [[package]]
 name = "p3-maybe-rayon"
 version = "0.1.0"
-
-[[package]]
-name = "p3-maybe-rayon"
-version = "0.1.0"
-source = "git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility#488564c0d18ed09b4a373967b6d6d4b4a02c5a74"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 
 [[package]]
 name = "p3-mds"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility#488564c0d18ed09b4a373967b6d6d4b4a02c5a74"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.12.1",
  "p3-dft",
  "p3-field",
  "p3-matrix",
  "p3-symmetric",
- "p3-util 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
+ "p3-util",
  "rand",
 ]
 
 [[package]]
 name = "p3-merkle-tree"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "p3-commit",
  "p3-field",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0",
+ "p3-maybe-rayon",
  "p3-symmetric",
- "p3-util 0.1.0",
+ "p3-util",
  "serde",
  "tracing",
 ]
@@ -841,7 +846,7 @@ dependencies = [
 [[package]]
 name = "p3-poseidon2"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility#488564c0d18ed09b4a373967b6d6d4b4a02c5a74"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "gcd",
  "p3-field",
@@ -853,14 +858,15 @@ dependencies = [
 [[package]]
 name = "p3-stark"
 version = "0.1.0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#2258c4b3639733c45d1c4161b41ed074b662faa3"
 dependencies = [
  "p3-air",
  "p3-field",
  "p3-interaction",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
+ "p3-maybe-rayon",
  "p3-uni-stark",
- "p3-util 0.1.0 (git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility)",
+ "p3-util",
  "rust_xlsxwriter",
  "serde",
  "tracing",
@@ -869,8 +875,9 @@ dependencies = [
 [[package]]
 name = "p3-symmetric"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "p3-field",
  "serde",
 ]
@@ -878,16 +885,17 @@ dependencies = [
 [[package]]
 name = "p3-uni-stark"
 version = "0.1.0"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
- "itertools",
+ "itertools 0.13.0",
  "p3-air",
  "p3-challenger",
  "p3-commit",
  "p3-dft",
  "p3-field",
  "p3-matrix",
- "p3-maybe-rayon 0.1.0",
- "p3-util 0.1.0",
+ "p3-maybe-rayon",
+ "p3-util",
  "serde",
  "tracing",
 ]
@@ -895,14 +903,7 @@ dependencies = [
 [[package]]
 name = "p3-util"
 version = "0.1.0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "p3-util"
-version = "0.1.0"
-source = "git+https://github.com/shuklaayush/Plonky3.git?branch=feat/update-visibility#488564c0d18ed09b4a373967b6d6d4b4a02c5a74"
+source = "git+https://github.com/Plonky3/Plonky3.git#ed21a5e11cb20effadaab606598ccad4e70e1a3e"
 dependencies = [
  "serde",
 ]
@@ -950,9 +951,9 @@ checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.82"
+version = "1.0.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ad3d49ab951a01fbaafe34f2ec74122942fe18a3f9814c3268f1bb72042131b"
+checksum = "0b33eb56c327dec362a9e55b3ad14f9d2f0904fb5a5b03b513ab5465399e9f43"
 dependencies = [
  "unicode-ident",
 ]
@@ -998,21 +999,21 @@ dependencies = [
 
 [[package]]
 name = "ratatui"
-version = "0.26.2"
+version = "0.26.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a564a852040e82671dc50a37d88f3aa83bbc690dfc6844cfe7a2591620206a80"
+checksum = "f44c9e68fd46eda15c646fbb85e1040b657a58cdc8c98db1d97a55930d991eef"
 dependencies = [
  "bitflags",
  "cassowary",
  "compact_str",
  "crossterm",
- "indoc",
- "itertools",
+ "itertools 0.12.1",
  "lru",
  "paste",
  "stability",
  "strum",
  "unicode-segmentation",
+ "unicode-truncate",
  "unicode-width",
 ]
 
@@ -1215,9 +1216,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.64"
+version = "2.0.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ad3dee41f36859875573074334c200d1add8e4a87bb37113ebd31d926b7b11f"
+checksum = "d2863d96a84c6439701d7a38f9de935ec562c8832cc55d1dde0f513b52fad106"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1371,6 +1372,16 @@ name = "unicode-segmentation"
 version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4c87d22b6e3f4a18d4d40ef354e97c90fcb14dd91d7dc0aa9d8a1172ebf7202"
+
+[[package]]
+name = "unicode-truncate"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5a5fbabedabe362c618c714dbefda9927b5afc8e2a8102f47f081089a9019226"
+dependencies = [
+ "itertools 0.12.1",
+ "unicode-width",
+]
 
 [[package]]
 name = "unicode-width"
@@ -1594,7 +1605,3 @@ dependencies = [
  "crossbeam-utils",
  "flate2",
 ]
-
-[[patch.unused]]
-name = "chip8-core"
-version = "0.1.0"

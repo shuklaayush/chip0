@@ -1,4 +1,5 @@
 pub mod chips;
+pub mod config;
 pub mod cpu;
 pub mod machine;
 pub mod prover;
