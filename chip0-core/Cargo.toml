@@ -43,6 +43,6 @@ tiny-keccak = "2.0.2"
 default = []
 trace-writer = [
     "p3-air-util/trace-writer",
-    "p3-machine/trace-writer",
     "p3-derive/trace-writer",
+    "p3-machine/trace-writer",
 ]

@@ -1,14 +1,14 @@
-use p3_derive::AirColumns;
+use p3_derive::Columns;
 
 #[repr(C)]
-#[derive(AirColumns, Default, Clone)]
+#[derive(Columns, Default, Clone)]
 pub struct MemoryStartPreprocessedCols<T> {
     pub addr: T,
     pub value: T,
 }
 
 #[repr(C)]
-#[derive(AirColumns, Default, Clone)]
+#[derive(Columns, Default, Clone)]
 pub struct MemoryStartCols<T> {
     pub mult: T,
 }

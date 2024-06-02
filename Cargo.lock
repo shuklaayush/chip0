@@ -632,7 +632,7 @@ dependencies = [
 [[package]]
 name = "p3-air-util"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-utils.git#23a0a0151f75deca9276e3660fdff2c4e0d4e2a0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#ffb202e1eb34b96c99c91baa3df16ed165ff35b7"
 dependencies = [
  "hashbrown",
  "num-bigint",
@@ -690,7 +690,7 @@ dependencies = [
 [[package]]
 name = "p3-derive"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-utils.git#23a0a0151f75deca9276e3660fdff2c4e0d4e2a0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#ffb202e1eb34b96c99c91baa3df16ed165ff35b7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -745,7 +745,7 @@ dependencies = [
 [[package]]
 name = "p3-interaction"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-utils.git#23a0a0151f75deca9276e3660fdff2c4e0d4e2a0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#ffb202e1eb34b96c99c91baa3df16ed165ff35b7"
 dependencies = [
  "p3-air",
  "p3-field",
@@ -787,7 +787,7 @@ dependencies = [
 [[package]]
 name = "p3-machine"
 version = "0.1.0"
-source = "git+https://github.com/shuklaayush/p3-utils.git#23a0a0151f75deca9276e3660fdff2c4e0d4e2a0"
+source = "git+https://github.com/shuklaayush/p3-utils.git#ffb202e1eb34b96c99c91baa3df16ed165ff35b7"
 dependencies = [
  "cfg-if",
  "itertools 0.12.1",

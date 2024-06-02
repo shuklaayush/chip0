@@ -1,9 +1,9 @@
-use p3_derive::AirColumns;
+use p3_derive::Columns;
 
 pub const WORD_BITS: usize = 8;
 
 #[repr(C)]
-#[derive(AirColumns, Default, Clone)]
+#[derive(Columns, Default, Clone)]
 pub struct DrawCols<T> {
     pub is_real: T,
     pub is_first: T,

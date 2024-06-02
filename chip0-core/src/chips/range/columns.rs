@@ -1,7 +1,7 @@
-use p3_derive::AirColumns;
+use p3_derive::Columns;
 
 #[repr(C)]
-#[derive(AirColumns, Default, Clone)]
+#[derive(Columns, Default, Clone)]
 pub struct RangeCols<T> {
     pub value: T,
     pub mult: T,
