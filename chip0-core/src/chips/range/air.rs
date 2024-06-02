@@ -3,12 +3,12 @@ use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
-use super::columns::{RangeCols, NUM_RANGE_COLS};
+use super::columns::RangeCols;
 use super::RangeChip;
 
 impl<F> BaseAir<F> for RangeChip {
     fn width(&self) -> usize {
-        NUM_RANGE_COLS
+        RangeCols::<F>::num_cols()
     }
 }
 

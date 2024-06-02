@@ -1,88 +1,81 @@
 use chip8_core::constants::{FLAG_REGISTER, NUM_KEYS, NUM_REGISTERS};
 use p3_air::VirtualPairCol;
 use p3_field::Field;
-use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
-use crate::chips::cpu::columns::CPU_COL_MAP;
+use crate::chips::cpu::columns::CpuCols;
 
 use super::CpuChip;
 
-impl<F: Field> InteractionChip<F> for CpuChip {
+impl<F: Field> InteractionAir<F> for CpuChip {
     fn sends(&self) -> Vec<Interaction<F>> {
+        let col_map = CpuCols::<F>::col_map();
         vec![Interaction {
             fields: vec![
-                VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                VirtualPairCol::single_main(CPU_COL_MAP.index_register),
-                VirtualPairCol::single_main(CPU_COL_MAP.vx),
-                VirtualPairCol::single_main(CPU_COL_MAP.vy),
+                VirtualPairCol::single_main(col_map.clk),
+                VirtualPairCol::single_main(col_map.index_register),
+                VirtualPairCol::single_main(col_map.vx),
+                VirtualPairCol::single_main(col_map.vy),
             ],
-            count: VirtualPairCol::single_main(CPU_COL_MAP.is_draw),
+            count: VirtualPairCol::single_main(col_map.is_draw),
             argument_index: self.bus_draw,
         }]
     }
 
     fn receives(&self) -> Vec<Interaction<F>> {
+        let col_map = CpuCols::<F>::col_map();
         let mut interactions = vec![
             Interaction {
                 fields: vec![
-                    VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                    VirtualPairCol::single_main(CPU_COL_MAP.registers[FLAG_REGISTER]),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.registers[FLAG_REGISTER]),
                 ],
-                count: VirtualPairCol::single_main(CPU_COL_MAP.is_draw),
+                count: VirtualPairCol::single_main(col_map.is_draw),
                 argument_index: self.bus_draw,
             },
             Interaction {
                 fields: vec![
-                    VirtualPairCol::single_main(CPU_COL_MAP.program_counter),
-                    VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                    VirtualPairCol::single_main(CPU_COL_MAP.opcode_hi),
+                    VirtualPairCol::single_main(col_map.program_counter),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.opcode_hi),
                 ],
-                count: VirtualPairCol::single_main(CPU_COL_MAP.is_real),
+                count: VirtualPairCol::single_main(col_map.is_real),
                 argument_index: self.bus_memory,
             },
             Interaction {
                 fields: vec![
-                    VirtualPairCol::new_main(
-                        vec![(CPU_COL_MAP.program_counter, F::one())],
-                        F::one(),
-                    ),
-                    VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                    VirtualPairCol::single_main(CPU_COL_MAP.opcode_lo),
+                    VirtualPairCol::new_main(vec![(col_map.program_counter, F::one())], F::one()),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.opcode_lo),
                 ],
-                count: VirtualPairCol::single_main(CPU_COL_MAP.is_real),
+                count: VirtualPairCol::single_main(col_map.is_real),
                 argument_index: self.bus_memory,
             },
             Interaction {
                 fields: vec![
-                    VirtualPairCol::single_main(CPU_COL_MAP.index_register),
-                    VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                    VirtualPairCol::single_main(CPU_COL_MAP.vx_bcd0),
+                    VirtualPairCol::single_main(col_map.index_register),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.vx_bcd0),
                 ],
-                count: VirtualPairCol::single_main(CPU_COL_MAP.is_store_bcd),
+                count: VirtualPairCol::single_main(col_map.is_store_bcd),
                 argument_index: self.bus_memory,
             },
             Interaction {
                 fields: vec![
-                    VirtualPairCol::new_main(
-                        vec![(CPU_COL_MAP.index_register, F::one())],
-                        F::one(),
-                    ),
-                    VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                    VirtualPairCol::single_main(CPU_COL_MAP.vx_bcd1),
+                    VirtualPairCol::new_main(vec![(col_map.index_register, F::one())], F::one()),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.vx_bcd1),
                 ],
-                count: VirtualPairCol::single_main(CPU_COL_MAP.is_store_bcd),
+                count: VirtualPairCol::single_main(col_map.is_store_bcd),
                 argument_index: self.bus_memory,
             },
             Interaction {
                 fields: vec![
-                    VirtualPairCol::new_main(
-                        vec![(CPU_COL_MAP.index_register, F::one())],
-                        F::two(),
-                    ),
-                    VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                    VirtualPairCol::single_main(CPU_COL_MAP.vx_bcd2),
+                    VirtualPairCol::new_main(vec![(col_map.index_register, F::one())], F::two()),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.vx_bcd2),
                 ],
-                count: VirtualPairCol::single_main(CPU_COL_MAP.is_store_bcd),
+                count: VirtualPairCol::single_main(col_map.is_store_bcd),
                 argument_index: self.bus_memory,
             },
         ];
@@ -90,25 +83,25 @@ impl<F: Field> InteractionChip<F> for CpuChip {
         interactions.extend((0..NUM_REGISTERS).map(|i| Interaction {
             fields: vec![
                 VirtualPairCol::new_main(
-                    vec![(CPU_COL_MAP.index_register, F::one())],
+                    vec![(col_map.index_register, F::one())],
                     F::from_canonical_usize(i),
                 ),
-                VirtualPairCol::single_main(CPU_COL_MAP.clk),
-                VirtualPairCol::single_main(CPU_COL_MAP.registers[i]),
+                VirtualPairCol::single_main(col_map.clk),
+                VirtualPairCol::single_main(col_map.registers[i]),
             ],
             // TODO: load/store registers
-            count: VirtualPairCol::single_main(CPU_COL_MAP.lte_x_sel[i]),
+            count: VirtualPairCol::single_main(col_map.lte_x_sel[i]),
             argument_index: self.bus_memory,
         }));
 
         // TODO: keypad interactions
         // interactions.extend((0..NUM_KEYS).map(|i| Interaction {
         //     fields: vec![
-        //         VirtualPairCol::single_main(CPU_COL_MAP.clk),
+        //         VirtualPairCol::single_main(col_map.clk),
         //         VirtualPairCol::constant(F::from_canonical_usize(i)),
-        //         VirtualPairCol::single_main(CPU_COL_MAP.keypad[i]),
+        //         VirtualPairCol::single_main(col_map.keypad[i]),
         //     ],
-        //     count: VirtualPairCol::single_main(CPU_COL_MAP.keypad[i]),
+        //     count: VirtualPairCol::single_main(col_map.keypad[i]),
         //     argument_index: self.bus_memory,
         // }));
 
@@ -116,4 +109,4 @@ impl<F: Field> InteractionChip<F> for CpuChip {
     }
 }
 
-impl<AB: InteractionAirBuilder> InteractionAir<AB> for CpuChip {}
+impl<AB: InteractionAirBuilder> Rap<AB> for CpuChip {}

@@ -5,22 +5,22 @@ use p3_field::Field;
 use p3_matrix::dense::RowMajorMatrix;
 use p3_matrix::Matrix;
 
-use crate::chips::memory_start::columns::NUM_MEMORY_START_PREPROCESSED_COLS;
-
-use super::columns::{MemoryStartCols, MemoryStartPreprocessedCols, NUM_MEMORY_START_COLS};
+use super::columns::{MemoryStartCols, MemoryStartPreprocessedCols};
 use super::MemoryStartChip;
 
 impl<F: Field> BaseAir<F> for MemoryStartChip {
     fn width(&self) -> usize {
-        NUM_MEMORY_START_COLS
+        MemoryStartCols::<F>::num_cols()
     }
 
     fn preprocessed_trace(&self) -> Option<RowMajorMatrix<F>> {
+        let num_preprocessed_cols = MemoryStartPreprocessedCols::<F>::num_cols();
+
         let num_real_rows = MEMORY_SIZE;
         let num_rows = num_real_rows.next_power_of_two();
         let mut trace = RowMajorMatrix::new(
-            vec![F::zero(); num_rows * NUM_MEMORY_START_PREPROCESSED_COLS],
-            NUM_MEMORY_START_PREPROCESSED_COLS,
+            vec![F::zero(); num_rows * num_preprocessed_cols],
+            num_preprocessed_cols,
         );
         let (prefix, rows, suffix) = unsafe {
             trace

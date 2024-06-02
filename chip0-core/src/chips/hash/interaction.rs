@@ -1,11 +1,11 @@
 use itertools::Itertools;
 use p3_air::VirtualPairCol;
 use p3_field::Field;
-use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
 use super::{columns::HASH_COL_MAP, HashChip};
 
-impl<F: Field> InteractionChip<F> for HashChip {
+impl<F: Field> InteractionAir<F> for HashChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         vec![]
     }
@@ -15,4 +15,4 @@ impl<F: Field> InteractionChip<F> for HashChip {
     }
 }
 
-impl<AB: InteractionAirBuilder> InteractionAir<AB> for HashChip {}
+impl<AB: InteractionAirBuilder> Rap<AB> for HashChip {}

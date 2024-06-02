@@ -3,12 +3,12 @@ use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
-use super::columns::{MemoryCols, NUM_MEMORY_COLS};
+use super::columns::MemoryCols;
 use super::MemoryChip;
 
 impl<F> BaseAir<F> for MemoryChip {
     fn width(&self) -> usize {
-        NUM_MEMORY_COLS
+        MemoryCols::<F>::num_cols()
     }
 }
 

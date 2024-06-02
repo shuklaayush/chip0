@@ -1,19 +1,20 @@
 use p3_air::VirtualPairCol;
 use p3_field::Field;
-use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
-use super::{columns::KEYPAD_COL_MAP, KeypadChip};
+use super::{columns::KeypadCols, KeypadChip};
 
-impl<F: Field> InteractionChip<F> for KeypadChip {
+impl<F: Field> InteractionAir<F> for KeypadChip {
     fn sends(&self) -> Vec<Interaction<F>> {
+        let col_map = KeypadCols::<F>::col_map();
         vec![
             // Interaction {
             //     fields: vec![
-            //         VirtualPairCol::single_main(KEYPAD_COL_MAP.clk),
-            //         VirtualPairCol::single_main(KEYPAD_COL_MAP.index),
-            //         VirtualPairCol::single_main(KEYPAD_COL_MAP.value),
+            //         VirtualPairCol::single_main(col_map.clk),
+            //         VirtualPairCol::single_main(col_map.index),
+            //         VirtualPairCol::single_main(col_map.value),
             //     ],
-            //     count: VirtualPairCol::single_main(KEYPAD_COL_MAP.is_real),
+            //     count: VirtualPairCol::single_main(col_map.is_real),
             //     argument_index: self.bus_keypad,
             // }
         ]
@@ -24,4 +25,4 @@ impl<F: Field> InteractionChip<F> for KeypadChip {
     }
 }
 
-impl<AB: InteractionAirBuilder> InteractionAir<AB> for KeypadChip {}
+impl<AB: InteractionAirBuilder> Rap<AB> for KeypadChip {}

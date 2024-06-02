@@ -1,22 +1,22 @@
 use p3_air::VirtualPairCol;
 use p3_field::Field;
-use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
 use super::{
-    columns::{
-        MEMORY_START_COL_MAP, MEMORY_START_PREPROCESSED_COL_MAP, NUM_MEMORY_START_PREPROCESSED_COLS,
-    },
+    columns::{MemoryStartCols, MemoryStartPreprocessedCols},
     MemoryStartChip,
 };
 
-impl<F: Field> InteractionChip<F> for MemoryStartChip {
+impl<F: Field> InteractionAir<F> for MemoryStartChip {
     fn sends(&self) -> Vec<Interaction<F>> {
+        let preprocessed_col_map = MemoryStartPreprocessedCols::<F>::col_map();
+        let col_map = MemoryStartCols::<F>::col_map();
         vec![Interaction {
             fields: vec![
-                VirtualPairCol::single_preprocessed(MEMORY_START_PREPROCESSED_COL_MAP.addr),
-                VirtualPairCol::single_preprocessed(MEMORY_START_PREPROCESSED_COL_MAP.value),
+                VirtualPairCol::single_preprocessed(preprocessed_col_map.addr),
+                VirtualPairCol::single_preprocessed(preprocessed_col_map.value),
             ],
-            count: VirtualPairCol::single_main(MEMORY_START_COL_MAP.mult),
+            count: VirtualPairCol::single_main(col_map.mult),
             argument_index: self.bus_memory_start,
         }]
     }
@@ -26,8 +26,8 @@ impl<F: Field> InteractionChip<F> for MemoryStartChip {
     }
 }
 
-impl<AB: InteractionAirBuilder> InteractionAir<AB> for MemoryStartChip {
+impl<AB: InteractionAirBuilder> Rap<AB> for MemoryStartChip {
     fn preprocessed_width(&self) -> usize {
-        NUM_MEMORY_START_PREPROCESSED_COLS
+        MemoryStartPreprocessedCols::<AB::F>::num_cols()
     }
 }

@@ -4,12 +4,12 @@ use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
-use super::columns::{DrawCols, NUM_DRAW_COLS};
+use super::columns::DrawCols;
 use super::DrawChip;
 
 impl<F> BaseAir<F> for DrawChip {
     fn width(&self) -> usize {
-        NUM_DRAW_COLS
+        DrawCols::<F>::num_cols()
     }
 }
 

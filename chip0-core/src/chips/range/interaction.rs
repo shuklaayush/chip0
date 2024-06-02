@@ -1,23 +1,22 @@
 use p3_air::VirtualPairCol;
 use p3_field::Field;
-use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, InteractionChip};
+use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
-use crate::chips::range::columns::RANGE_COL_MAP;
+use super::{columns::RangeCols, RangeChip};
 
-use super::RangeChip;
-
-impl<F: Field> InteractionChip<F> for RangeChip {
+impl<F: Field> InteractionAir<F> for RangeChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         vec![]
     }
 
     fn receives(&self) -> Vec<Interaction<F>> {
+        let col_map = RangeCols::<F>::col_map();
         vec![Interaction {
-            fields: vec![VirtualPairCol::single_main(RANGE_COL_MAP.value)],
-            count: VirtualPairCol::single_main(RANGE_COL_MAP.mult),
+            fields: vec![VirtualPairCol::single_main(col_map.value)],
+            count: VirtualPairCol::single_main(col_map.mult),
             argument_index: self.bus_range,
         }]
     }
 }
 
-impl<AB: InteractionAirBuilder> InteractionAir<AB> for RangeChip {}
+impl<AB: InteractionAirBuilder> Rap<AB> for RangeChip {}

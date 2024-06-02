@@ -5,12 +5,12 @@ use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
-use super::columns::{CpuCols, NUM_CPU_COLS};
+use super::columns::CpuCols;
 use super::CpuChip;
 
 impl<F> BaseAir<F> for CpuChip {
     fn width(&self) -> usize {
-        NUM_CPU_COLS
+        CpuCols::<F>::num_cols()
     }
 }
 

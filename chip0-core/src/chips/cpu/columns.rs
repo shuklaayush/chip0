@@ -1,15 +1,8 @@
-use core::mem::{size_of, transmute};
-
 use chip8_core::constants::{NUM_KEYS, NUM_REGISTERS, STACK_DEPTH};
-use p3_derive::AlignedBorrow;
-use p3_util::indices_arr;
-
-#[cfg(feature = "debug-trace")]
-use p3_derive::Headers;
+use p3_derive::AirColumns;
 
 #[repr(C)]
-#[derive(AlignedBorrow, Default, Copy, Clone)]
-#[cfg_attr(feature = "debug-trace", derive(Headers))]
+#[derive(AirColumns, Clone, Default)]
 pub struct CpuCols<T> {
     pub is_real: T,
 
@@ -108,12 +101,4 @@ pub struct CpuCols<T> {
     // pub add_vi_vx: T,
     pub is_first: T,
     pub is_final: T,
-}
-
-pub const NUM_CPU_COLS: usize = size_of::<CpuCols<u8>>();
-pub(crate) const CPU_COL_MAP: CpuCols<usize> = make_col_map();
-
-const fn make_col_map() -> CpuCols<usize> {
-    let indices_arr = indices_arr::<NUM_CPU_COLS>();
-    unsafe { transmute::<[usize; NUM_CPU_COLS], CpuCols<usize>>(indices_arr) }
 }

@@ -2,8 +2,8 @@ pub mod air;
 pub mod columns;
 pub mod interaction;
 
+use p3_air_util::TraceWriter;
 use p3_field::{ExtensionField, PrimeField32};
-use p3_stark::AirDebug;
 
 use self::columns::MemoryStartCols;
 
@@ -13,8 +13,8 @@ pub struct MemoryStartChip {
     pub bus_memory_start: usize,
 }
 
-impl<F: PrimeField32, EF: ExtensionField<F>> AirDebug<F, EF> for MemoryStartChip {
-    #[cfg(feature = "debug-trace")]
+#[cfg(feature = "trace-writer")]
+impl<F: PrimeField32, EF: ExtensionField<F>> TraceWriter<F, EF> for MemoryStartChip {
     fn main_headers(&self) -> Vec<String> {
         MemoryStartCols::<F>::headers()
     }

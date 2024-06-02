@@ -24,7 +24,7 @@ p3-util = { workspace = true }
 
 p3-derive = { workspace = true }
 p3-interaction = { workspace = true }
-p3-stark = { workspace = true }
+p3-air-util = { workspace = true }
 p3-machine = { workspace = true }
 
 serde = { workspace = true }
@@ -34,16 +34,15 @@ chip8-core = { path = "../chip8-core" }
 
 itertools = "0.12.1"
 rand = "0.8.5"
-rust_xlsxwriter = { version = "0.64.1", optional = true }
 tokio = { version = "1.37.0", features = ["rt"] }
 tracing-subscriber = { version = "0.3.17", features = ["std", "env-filter"] }
 tracing-forest = { version = "0.1.6", features = ["ansi", "smallvec"] }
 tiny-keccak = "2.0.2"
 
 [features]
-default = ["debug-trace"]
-debug-trace = [
-    "dep:rust_xlsxwriter",
-    "p3-stark/debug-trace",
-    "p3-machine/debug-trace",
+default = ["trace-writer"]
+trace-writer = [
+    "p3-air-util/trace-writer",
+    "p3-machine/trace-writer",
+    "p3-derive/trace-writer",
 ]

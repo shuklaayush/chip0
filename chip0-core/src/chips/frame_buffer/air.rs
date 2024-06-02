@@ -3,12 +3,12 @@ use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
-use super::columns::{FrameBufferCols, NUM_FRAME_BUFFER_COLS};
+use super::columns::FrameBufferCols;
 use super::FrameBufferChip;
 
 impl<F> BaseAir<F> for FrameBufferChip {
     fn width(&self) -> usize {
-        NUM_FRAME_BUFFER_COLS
+        FrameBufferCols::<F>::num_cols()
     }
 }
 

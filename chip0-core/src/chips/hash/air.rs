@@ -3,12 +3,12 @@ use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
-use super::columns::{HashCols, NUM_HASH_COLS};
+use super::columns::HashCols;
 use super::HashChip;
 
 impl<F> BaseAir<F> for HashChip {
     fn width(&self) -> usize {
-        NUM_HASH_COLS
+        HashCols::num_cols()
     }
 }
 

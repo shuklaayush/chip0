@@ -24,12 +24,8 @@ p3-util = { git = "https://github.com/Plonky3/Plonky3.git" }
 
 p3-derive = { git = "https://github.com/shuklaayush/p3-utils.git" }
 p3-interaction = { git = "https://github.com/shuklaayush/p3-utils.git" }
-p3-stark = { git = "https://github.com/shuklaayush/p3-utils.git", features = [
-    "debug-trace",
-] }
-p3-machine = { git = "https://github.com/shuklaayush/p3-utils.git", features = [
-    "debug-trace",
-] }
+p3-air-util = { git = "https://github.com/shuklaayush/p3-utils.git" }
+p3-machine = { git = "https://github.com/shuklaayush/p3-utils.git" }
 
 serde = { version = "1.0", default-features = false, features = [
     "derive",

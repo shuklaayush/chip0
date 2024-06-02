@@ -8,10 +8,8 @@ use chip8_core::{
     keypad::Key,
     state::{Address, SimpleState, State, Word},
 };
-use core::mem::size_of;
 use core::slice;
 use itertools::Itertools;
-use p3_derive::AlignedBorrow;
 use p3_field::PrimeField32;
 use p3_matrix::dense::RowMajorMatrix;
 use std::{
@@ -20,13 +18,9 @@ use std::{
 };
 
 use crate::chips::{
-    cpu::columns::{CpuCols, NUM_CPU_COLS},
-    draw::columns::{DrawCols, NUM_DRAW_COLS},
-    frame_buffer::columns::NUM_FRAME_BUFFER_COLS,
-    keypad::columns::{KeypadCols, NUM_KEYPAD_COLS},
-    memory::columns::{MemoryCols, NUM_MEMORY_COLS},
-    memory_start::columns::{MemoryStartCols, NUM_MEMORY_START_COLS},
-    range::columns::{RangeCols, NUM_RANGE_COLS},
+    cpu::columns::CpuCols, draw::columns::DrawCols, frame_buffer::columns::FrameBufferCols,
+    keypad::columns::KeypadCols, memory::columns::MemoryCols,
+    memory_start::columns::MemoryStartCols, range::columns::RangeCols,
 };
 
 #[derive(Default, Clone)]
@@ -37,7 +31,7 @@ pub struct IncrementalTrace<Cols: Default> {
 }
 
 #[repr(C)]
-#[derive(AlignedBorrow, Default, Copy, Clone)]
+#[derive(Default, Copy, Clone)]
 pub struct MemoryEventLike<T> {
     pub clk: T,
     pub address: T,
@@ -156,13 +150,15 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             })
             .collect_vec();
 
-        let cpu_matrix = self.cpu.to_trace_matrix(NUM_CPU_COLS);
-        let draw_matrix = self.draw.to_trace_matrix(NUM_DRAW_COLS);
-        let keypad_matrix = self.keypad.to_trace_matrix(NUM_KEYPAD_COLS);
-        let memory_matrix = memory_trace.to_trace_matrix(NUM_MEMORY_COLS);
-        let frame_buffer_matrix = frame_buffer_trace.to_trace_matrix(NUM_FRAME_BUFFER_COLS);
-        let range_matrix = range_trace.to_trace_matrix(NUM_RANGE_COLS);
-        let memory_start_matrix = memory_start_trace.to_trace_matrix(NUM_MEMORY_START_COLS);
+        let cpu_matrix = self.cpu.to_trace_matrix(CpuCols::<F>::num_cols());
+        let draw_matrix = self.draw.to_trace_matrix(DrawCols::<F>::num_cols());
+        let keypad_matrix = self.keypad.to_trace_matrix(KeypadCols::<F>::num_cols());
+        let memory_matrix = memory_trace.to_trace_matrix(MemoryCols::<F>::num_cols());
+        let frame_buffer_matrix =
+            frame_buffer_trace.to_trace_matrix(FrameBufferCols::<F>::num_cols());
+        let range_matrix = range_trace.to_trace_matrix(RangeCols::<F>::num_cols());
+        let memory_start_matrix =
+            memory_start_trace.to_trace_matrix(MemoryStartCols::<F>::num_cols());
 
         vec![
             cpu_matrix,
@@ -510,7 +506,7 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
         self.curr_row.diff_vx_vy_inv = (vx - vy).try_inverse().unwrap_or_default();
         self.curr_row.is_equal_vx_vy = F::from_bool(vx == vy);
 
-        self.trace.push(self.curr_row);
+        self.trace.push(self.curr_row.clone());
         // Copy state
         self.next_row.registers = self.curr_row.registers;
         self.next_row.index_register = self.curr_row.index_register;
@@ -519,15 +515,15 @@ impl<F: PrimeField32> IncrementalTrace<CpuCols<F>> {
         self.next_row.keypad = self.curr_row.keypad;
         self.next_row.stack_pointer_sel = self.curr_row.stack_pointer_sel;
 
-        self.curr_row = self.next_row;
+        self.curr_row = self.next_row.clone();
         self.next_row = CpuCols::default();
     }
 }
 
 impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
     pub fn add_curr_row_to_trace(&mut self) {
-        self.trace.push(self.curr_row);
-        self.curr_row = self.next_row;
+        self.trace.push(self.curr_row.clone());
+        self.curr_row = self.next_row.clone();
 
         self.next_row = KeypadCols::default();
     }
@@ -535,7 +531,7 @@ impl<F: PrimeField32> IncrementalTrace<KeypadCols<F>> {
 
 impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
     pub fn add_curr_row_to_trace(&mut self) {
-        self.trace.push(self.curr_row);
+        self.trace.push(self.curr_row.clone());
         // Copy state
         self.next_row.is_real = self.curr_row.is_real;
         self.next_row.clk = self.curr_row.clk;
@@ -543,7 +539,7 @@ impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
         self.next_row.register_y = self.curr_row.register_y;
         self.next_row.index_register = self.curr_row.index_register;
 
-        self.curr_row = self.next_row;
+        self.curr_row = self.next_row.clone();
         self.next_row = DrawCols::default();
     }
 }
