@@ -40,7 +40,7 @@ tracing-forest = { version = "0.1.6", features = ["ansi", "smallvec"] }
 tiny-keccak = "2.0.2"
 
 [features]
-default = ["trace-writer"]
+default = []
 trace-writer = [
     "p3-air-util/trace-writer",
     "p3-machine/trace-writer",

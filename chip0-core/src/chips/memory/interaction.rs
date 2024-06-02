@@ -2,7 +2,7 @@ use p3_air::VirtualPairCol;
 use p3_field::Field;
 use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
-use super::{MemoryChip, MemoryCols};
+use super::{columns::MemoryCols, MemoryChip};
 
 impl<F: Field> InteractionAir<F> for MemoryChip {
     fn sends(&self) -> Vec<Interaction<F>> {

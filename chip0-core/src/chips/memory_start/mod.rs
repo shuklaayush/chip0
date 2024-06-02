@@ -2,9 +2,12 @@ pub mod air;
 pub mod columns;
 pub mod interaction;
 
+#[cfg(feature = "trace-writer")]
 use p3_air_util::TraceWriter;
+#[cfg(feature = "trace-writer")]
 use p3_field::{ExtensionField, PrimeField32};
 
+#[cfg(feature = "trace-writer")]
 use self::columns::MemoryStartCols;
 
 #[derive(Clone, Debug)]
