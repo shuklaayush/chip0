@@ -10,16 +10,23 @@ use super::CpuChip;
 impl<F: Field> InteractionAir<F> for CpuChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         let col_map = CpuCols::<F>::col_map();
-        vec![Interaction {
-            fields: vec![
-                VirtualPairCol::single_main(col_map.clk),
-                VirtualPairCol::single_main(col_map.index_register),
-                VirtualPairCol::single_main(col_map.vx),
-                VirtualPairCol::single_main(col_map.vy),
-            ],
-            count: VirtualPairCol::single_main(col_map.is_draw),
-            argument_index: self.bus_draw,
-        }]
+        vec![
+            Interaction {
+                fields: vec![
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.index_register),
+                    VirtualPairCol::single_main(col_map.vx),
+                    VirtualPairCol::single_main(col_map.vy),
+                ],
+                count: VirtualPairCol::single_main(col_map.is_draw),
+                argument_index: self.bus_draw,
+            },
+            Interaction {
+                fields: vec![VirtualPairCol::single_main(col_map.clk)],
+                count: VirtualPairCol::single_main(col_map.is_clear_display),
+                argument_index: self.bus_clear,
+            },
+        ]
     }
 
     fn receives(&self) -> Vec<Interaction<F>> {

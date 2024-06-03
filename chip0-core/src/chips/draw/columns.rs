@@ -6,6 +6,7 @@ pub const WORD_BITS: usize = 8;
 #[derive(Columnar, Default, Clone)]
 pub struct DrawCols<T> {
     pub is_real: T,
+    // TODO: start and end
     pub is_first: T,
     pub is_last: T,
 

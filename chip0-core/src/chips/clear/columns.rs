@@ -1,12 +1,11 @@
 use p3_derive::Columnar;
 
-pub const WORD_BITS: usize = 8;
-
+// TODO: Use preprocessed?
 #[repr(C)]
 #[derive(Columnar, Default, Clone)]
 pub struct ClearCols<T> {
     pub is_real: T,
+    pub is_start: T,
     pub clk: T,
-    pub x: T,
-    pub y: T,
+    pub addr: T,
 }

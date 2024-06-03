@@ -18,9 +18,9 @@ use std::{
 };
 
 use crate::chips::{
-    cpu::columns::CpuCols, draw::columns::DrawCols, frame_buffer::columns::FrameBufferCols,
-    keypad::columns::KeypadCols, memory::columns::MemoryCols,
-    memory_start::columns::MemoryStartCols, range::columns::RangeCols,
+    clear::columns::ClearCols, cpu::columns::CpuCols, draw::columns::DrawCols,
+    frame_buffer::columns::FrameBufferCols, keypad::columns::KeypadCols,
+    memory::columns::MemoryCols, memory_start::columns::MemoryStartCols, range::columns::RangeCols,
 };
 
 #[derive(Default, Clone)]
@@ -42,6 +42,7 @@ pub struct MemoryEventLike<T> {
 #[derive(Clone)]
 pub struct PartialMachineTrace<F: PrimeField32> {
     pub cpu: Vec<CpuCols<F>>,
+    pub clear: Vec<ClearCols<F>>,
     pub draw: Vec<DrawCols<F>>,
     pub keypad: Vec<KeypadCols<F>>,
     // range_trace: Vec::default(),
@@ -151,6 +152,7 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
             .collect_vec();
 
         let cpu_matrix = self.cpu.to_trace_matrix(CpuCols::<F>::num_cols());
+        let clear_matrix = self.clear.to_trace_matrix(ClearCols::<F>::num_cols());
         let draw_matrix = self.draw.to_trace_matrix(DrawCols::<F>::num_cols());
         let keypad_matrix = self.keypad.to_trace_matrix(KeypadCols::<F>::num_cols());
         let memory_matrix = memory_trace.to_trace_matrix(MemoryCols::<F>::num_cols());
@@ -162,6 +164,7 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
 
         vec![
             cpu_matrix,
+            clear_matrix,
             draw_matrix,
             keypad_matrix,
             memory_matrix,
@@ -175,6 +178,7 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
 #[derive(Clone)]
 pub struct IncrementalMachineTrace<F: PrimeField32> {
     pub cpu: IncrementalTrace<CpuCols<F>>,
+    pub clear: IncrementalTrace<ClearCols<F>>,
     pub draw: IncrementalTrace<DrawCols<F>>,
     pub keypad: IncrementalTrace<KeypadCols<F>>,
     // range_trace: IncrementalTrace::default(),
@@ -191,6 +195,7 @@ impl<F: PrimeField32> Default for IncrementalMachineTrace<F> {
 
         Self {
             cpu,
+            clear: IncrementalTrace::default(),
             draw: IncrementalTrace::default(),
             keypad: IncrementalTrace::default(),
             // range: IncrementalTrace::default(),
@@ -219,11 +224,13 @@ impl<F: PrimeField32> StarkState<F> {
     pub fn finalize_trace(&mut self) -> PartialMachineTrace<F> {
         // TODO: Remove clones
         let cpu = self.trace.cpu.trace.clone();
+        let clear = self.trace.clear.trace.clone();
         let draw = self.trace.draw.trace.clone();
         let keypad = self.trace.keypad.trace.clone();
 
         PartialMachineTrace {
             cpu,
+            clear,
             draw,
             keypad,
             memory: self.trace.memory.clone(),
@@ -391,16 +398,26 @@ impl<F: PrimeField32> State for StarkState<F> {
         let clk = self.clk()?;
         for y in 0..DISPLAY_HEIGHT {
             for x in 0..DISPLAY_WIDTH {
-                if self.state.frame_buffer(y, x)? {
-                    let addr = y * DISPLAY_WIDTH + x;
-                    let event = MemoryEventLike {
-                        clk: F::from_canonical_u64(clk),
-                        address: F::from_canonical_usize(addr),
-                        value: F::from_bool(false),
-                        is_read: F::from_bool(false),
-                    };
-                    self.trace.frame_buffer.push(event);
+                let curr_row = &mut self.trace.clear.curr_row;
+                curr_row.is_real = F::one();
+                if y * DISPLAY_WIDTH + x == 0 {
+                    curr_row.is_start = F::one();
+                } else {
+                    curr_row.is_start = F::zero();
                 }
+                curr_row.clk = F::from_canonical_u64(clk);
+                curr_row.addr = F::from_canonical_usize(y * DISPLAY_WIDTH + x);
+
+                self.trace.clear.add_curr_row_to_trace();
+
+                let addr = y * DISPLAY_WIDTH + x;
+                let event = MemoryEventLike {
+                    clk: F::from_canonical_u64(clk),
+                    address: F::from_canonical_usize(addr),
+                    value: F::from_bool(false),
+                    is_read: F::from_bool(false),
+                };
+                self.trace.frame_buffer.push(event);
             }
         }
 
@@ -541,6 +558,21 @@ impl<F: PrimeField32> IncrementalTrace<DrawCols<F>> {
 
         self.curr_row = self.next_row.clone();
         self.next_row = DrawCols::default();
+    }
+}
+
+impl<F: PrimeField32> IncrementalTrace<ClearCols<F>> {
+    pub fn add_curr_row_to_trace(&mut self) {
+        self.trace.push(self.curr_row.clone());
+
+        // Copy state
+        self.next_row.is_real = self.curr_row.is_real;
+        self.next_row.is_start = self.curr_row.is_start;
+        self.next_row.clk = self.curr_row.clk;
+        self.next_row.addr = self.curr_row.addr;
+
+        self.curr_row = self.next_row.clone();
+        self.next_row = ClearCols::default();
     }
 }
 

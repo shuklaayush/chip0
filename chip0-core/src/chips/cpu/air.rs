@@ -34,14 +34,14 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
 
         // clk
         // TODO: See if can avoid is_real
-        let counter = CounterAir {};
+        let counter = CounterAir;
         let mut builder_when_next_is_real = builder.when(next.is_real);
         let mut clk_builder =
             SubAirBuilder::new_main(&mut builder_when_next_is_real, vec![col_map.clk]);
         counter.eval(&mut clk_builder);
 
         // Opcode selectors
-        let selector = SelectorAir::<NUM_OPCODES> {};
+        let selector = SelectorAir::<NUM_OPCODES>;
         let mut builder_when_local_is_real = builder.when(local.is_real);
         let mut selector_builder = SubAirBuilder::new_main(
             &mut builder_when_local_is_real,
@@ -161,7 +161,7 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
             .sum::<AB::Expr>();
 
         // is_equal_vx_nn
-        let is_equal_vx_nn_air = IsEqualAir {};
+        let is_equal_vx_nn_air = IsEqualAir;
         let mut builder_when_local_is_real = builder.when(local.is_real);
         let mut sub_builder = SubAirBuilder::new_main(
             &mut builder_when_local_is_real,
@@ -175,7 +175,7 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
         is_equal_vx_nn_air.eval(&mut sub_builder);
 
         // is_equal_vx_vy
-        let is_equal_vx_vy_air = IsEqualAir {};
+        let is_equal_vx_vy_air = IsEqualAir;
         let mut builder_when_local_is_real = builder.when(local.is_real);
         let mut sub_builder = SubAirBuilder::new_main(
             &mut builder_when_local_is_real,

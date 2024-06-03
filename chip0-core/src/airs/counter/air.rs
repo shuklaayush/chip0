@@ -5,7 +5,7 @@ use p3_matrix::Matrix;
 
 use super::columns::CounterCols;
 
-pub struct CounterAir {}
+pub struct CounterAir;
 
 impl<F> BaseAir<F> for CounterAir {
     fn width(&self) -> usize {

@@ -5,7 +5,7 @@ use p3_matrix::Matrix;
 
 use super::columns::SelectorCols;
 
-pub struct SelectorAir<const N: usize> {}
+pub struct SelectorAir<const N: usize>;
 
 impl<F, const N: usize> BaseAir<F> for SelectorAir<N> {
     fn width(&self) -> usize {

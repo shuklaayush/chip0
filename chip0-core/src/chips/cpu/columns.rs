@@ -99,6 +99,7 @@ pub struct CpuCols<T> {
     // pub shl_vx: T,
     // pub shl_vx_flag: T,
     // pub add_vi_vx: T,
+    // TODO: start and end
     pub is_first: T,
     pub is_final: T,
 }

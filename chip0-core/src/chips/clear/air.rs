@@ -1,5 +1,4 @@
 use core::borrow::Borrow;
-use itertools::Itertools;
 use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
@@ -22,7 +21,13 @@ impl<AB: AirBuilder> Air<AB> for ClearChip {
         let next: &ClearCols<AB::Var> = (*next).borrow();
 
         builder.assert_bool(local.is_real);
+        // builder.assert_bool(local.is_start);
 
-        // TODO: Constrain x, y
+        builder.when(local.is_start).assert_zero(local.addr);
+
+        builder
+            .when(next.is_real)
+            .when_ne(next.is_start, AB::Expr::one())
+            .assert_eq(next.addr, local.addr + AB::Expr::one());
     }
 }
