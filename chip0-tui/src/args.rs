@@ -13,6 +13,9 @@ pub struct CmdArgs {
     #[arg(long, default_value_t = 60)]
     pub refresh_rate: u64,
 
+    #[arg(long)]
+    pub num_cycles: Option<u64>,
+
     #[arg(long, default_value_t = false)]
     pub headless: bool,
 

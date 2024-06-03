@@ -4,10 +4,10 @@ use chip8_core::{
     input::{InputEvent, InputKind},
     keypad::Key,
 };
-use crossterm::event::{read, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use crossterm::event::{poll, read, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use csv::Writer;
 use serde::{Deserialize, Serialize};
-use std::io::Write;
+use std::{io::Write, time::Duration};
 
 const FREQUENCY: u64 = 120;
 
@@ -72,13 +72,19 @@ impl<W: Write + Send> InputDriver for TerminalKeyboardInput<W> {
     }
 
     fn poll(&mut self) -> Result<Option<InputEvent>, Chip8Error> {
-        let event = read().map_err(|e| Chip8Error::InputError(e.to_string()))?;
-        if let Event::Key(KeyEvent {
+        let mut event = None;
+        if poll(Duration::from_secs_f64(1.0 / self.frequency() as f64))
+            .map_err(|e| Chip8Error::InputError(e.to_string()))?
+        {
+            event = Some(read().map_err(|e| Chip8Error::InputError(e.to_string()))?);
+        }
+
+        if let Some(Event::Key(KeyEvent {
             code,
             kind,
             modifiers,
             ..
-        }) = event
+        })) = event
         {
             match (modifiers, code) {
                 (KeyModifiers::CONTROL, KeyCode::Char('c')) => return Err(Chip8Error::Interrupt),

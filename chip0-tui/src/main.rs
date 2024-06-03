@@ -95,7 +95,13 @@ async fn main() -> Result<()> {
     let cpu: StarkCpu<_, MyConfig, _> = StarkCpu::new(args.clk_freq, seeded_rng, prover);
     let mut chip8 = Chip8::new(cpu, inputs);
     let res = chip8
-        .load_and_run(rom.as_slice(), input_driver, display_driver, audio_driver)
+        .load_and_run(
+            rom.as_slice(),
+            args.num_cycles,
+            input_driver,
+            display_driver,
+            audio_driver,
+        )
         .await;
 
     restore_terminal(args.headless)?;

@@ -535,11 +535,17 @@ pub trait Cpu {
 
     async fn run(
         &mut self,
+        num_cycles: Option<u64>,
         status: Arc<RwLock<Result<(), Chip8Error>>>,
         input_queue: Arc<RwLock<VecDeque<(u64, InputEvent)>>>,
     ) {
         run_loop(status.clone(), self.frequency(), move |_| {
             let clk = self.state().clk()?;
+            if let Some(num_cycles) = num_cycles {
+                if clk >= num_cycles {
+                    return Ok(());
+                }
+            }
 
             while let Some(event) = (*input_queue.checked_write()?).dequeue(clk) {
                 self.state().set_key(event.key, event.kind);

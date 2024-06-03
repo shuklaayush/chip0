@@ -24,4 +24,6 @@ pub enum Chip8Error {
     MutexWriteError(String),
     #[error("Interrupted")]
     Interrupt,
+    #[error("Terminated")]
+    Terminated,
 }

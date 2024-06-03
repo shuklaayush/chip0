@@ -37,6 +37,7 @@ where
 
     pub async fn run(
         &mut self,
+        num_cycles: Option<u64>,
         mut input: impl InputDriver + 'static,
         display: Option<impl DisplayDriver + 'static>,
         audio: Option<impl AudioDriver + 'static>,
@@ -73,7 +74,9 @@ where
         };
 
         // CPU loop
-        self.cpu.run(status.clone(), self.input_queue.clone()).await;
+        self.cpu
+            .run(num_cycles, status.clone(), self.input_queue.clone())
+            .await;
 
         // Wait for all threads
         input_handle
@@ -97,11 +100,12 @@ where
     pub async fn load_and_run(
         &mut self,
         rom: &[u8],
+        num_cycles: Option<u64>,
         input: impl InputDriver + 'static,
         display: Option<impl DisplayDriver + 'static>,
         audio: Option<impl AudioDriver + 'static>,
     ) -> Result<(), Chip8Error> {
         self.load(rom)?;
-        self.run(input, display, audio).await
+        self.run(num_cycles, input, display, audio).await
     }
 }
