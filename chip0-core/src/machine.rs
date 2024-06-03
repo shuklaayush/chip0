@@ -2,9 +2,13 @@ use p3_field::PrimeField32;
 use p3_machine::machine::Machine;
 use p3_uni_stark::{StarkGenericConfig, Val};
 
-use crate::chips::{
-    cpu::CpuChip, draw::DrawChip, frame_buffer::FrameBufferChip, keypad::KeypadChip,
-    memory::MemoryChip, memory_start::MemoryStartChip, range::RangeChip, Chip0MachineChip,
+use crate::{
+    bus::Chip0MachineBus,
+    chips::{
+        clear::ClearChip, cpu::CpuChip, draw::DrawChip, frame_buffer::FrameBufferChip,
+        keypad::KeypadChip, memory::MemoryChip, memory_start::MemoryStartChip, range::RangeChip,
+        Chip0MachineChip,
+    },
 };
 
 #[derive(Default, Clone)]
@@ -18,26 +22,24 @@ impl Chip0Machine {
     }
 }
 
-pub enum Chip0MachineBus {
-    DrawBus = 0,
-    KeypadBus = 1,
-    MemoryBus = 2,
-    FrameBufferBus = 3,
-    RangeBus = 4,
-    MemoryStartBus = 5,
-    // HashBus = 6,
-}
-
-impl<'a, SC> Machine<'a, SC, Chip0MachineChip> for Chip0Machine
+impl<'a, SC> Machine<'a, SC> for Chip0Machine
 where
     SC: StarkGenericConfig,
     Val<SC>: PrimeField32,
 {
+    type Chip = Chip0MachineChip;
+    type Bus = Chip0MachineBus;
+
     fn chips(&self) -> Vec<Chip0MachineChip> {
         let cpu_chip = CpuChip {
+            bus_clear: Chip0MachineBus::ClearBus as usize,
             bus_draw: Chip0MachineBus::DrawBus as usize,
             bus_memory: Chip0MachineBus::MemoryBus as usize,
             bus_keypad: Chip0MachineBus::KeypadBus as usize,
+        };
+        let clear_chip = ClearChip {
+            bus_clear: Chip0MachineBus::ClearBus as usize,
+            bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
         };
         let draw_chip = DrawChip {
             bus_draw: Chip0MachineBus::DrawBus as usize,
@@ -66,6 +68,7 @@ where
 
         vec![
             Chip0MachineChip::Cpu(cpu_chip),
+            Chip0MachineChip::Clear(clear_chip),
             Chip0MachineChip::Draw(draw_chip),
             Chip0MachineChip::Keypad(keypad_chip),
             Chip0MachineChip::Memory(memory_chip),

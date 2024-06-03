@@ -1,12 +1,12 @@
 use p3_derive::Columnar;
 
+pub const WORD_BITS: usize = 8;
+
 #[repr(C)]
 #[derive(Columnar, Default, Clone)]
-pub struct KeypadCols<T> {
+pub struct ClearCols<T> {
     pub is_real: T,
     pub clk: T,
-    pub index: T,
-    pub value: T,
-    pub input_hash: T,
-    pub output_hash: T,
+    pub x: T,
+    pub y: T,
 }

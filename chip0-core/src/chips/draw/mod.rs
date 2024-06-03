@@ -5,7 +5,7 @@ pub mod interaction;
 #[cfg(feature = "trace-writer")]
 use p3_air_util::TraceWriter;
 #[cfg(feature = "trace-writer")]
-use p3_field::{ExtensionField, PrimeField32};
+use p3_field::{ExtensionField, Field};
 
 #[cfg(feature = "trace-writer")]
 use self::columns::DrawCols;
@@ -18,7 +18,7 @@ pub struct DrawChip {
 }
 
 #[cfg(feature = "trace-writer")]
-impl<F: PrimeField32, EF: ExtensionField<F>> TraceWriter<F, EF> for DrawChip {
+impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for DrawChip {
     fn headers(&self) -> Vec<String> {
         DrawCols::<F>::headers()
     }

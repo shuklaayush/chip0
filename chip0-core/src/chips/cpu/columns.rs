@@ -1,8 +1,8 @@
 use chip8_core::constants::{NUM_KEYS, NUM_REGISTERS, STACK_DEPTH};
-use p3_derive::Columns;
+use p3_derive::Columnar;
 
 #[repr(C)]
-#[derive(Columns, Clone, Default)]
+#[derive(Columnar, Clone, Default)]
 pub struct CpuCols<T> {
     pub is_real: T,
 

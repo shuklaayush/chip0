@@ -7,6 +7,7 @@ use p3_field::AbstractField;
 use p3_matrix::Matrix;
 
 use crate::airs::counter::CounterAir;
+use crate::airs::is_equal::IsEqualAir;
 use crate::airs::selector::SelectorAir;
 
 use super::columns::CpuCols;
@@ -160,24 +161,32 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
             .sum::<AB::Expr>();
 
         // is_equal_vx_nn
-        let diff_vx_nn = local.vx - local.nn;
-        builder.when(local.is_real).assert_eq(
-            AB::Expr::one() - diff_vx_nn.clone() * local.diff_vx_nn_inv,
-            local.is_equal_vx_nn,
+        let is_equal_vx_nn_air = IsEqualAir {};
+        let mut builder_when_local_is_real = builder.when(local.is_real);
+        let mut sub_builder = SubAirBuilder::new_main(
+            &mut builder_when_local_is_real,
+            vec![
+                col_map.vx,
+                col_map.nn,
+                col_map.diff_vx_nn_inv,
+                col_map.is_equal_vx_nn,
+            ],
         );
-        builder
-            .when(local.is_real)
-            .assert_zero(local.is_equal_vx_nn * diff_vx_nn);
+        is_equal_vx_nn_air.eval(&mut sub_builder);
 
         // is_equal_vx_vy
-        let diff_vx_vy = local.vx - local.vy;
-        builder.when(local.is_real).assert_eq(
-            AB::Expr::one() - diff_vx_vy.clone() * local.diff_vx_vy_inv,
-            local.is_equal_vx_vy,
+        let is_equal_vx_vy_air = IsEqualAir {};
+        let mut builder_when_local_is_real = builder.when(local.is_real);
+        let mut sub_builder = SubAirBuilder::new_main(
+            &mut builder_when_local_is_real,
+            vec![
+                col_map.vx,
+                col_map.vy,
+                col_map.diff_vx_vy_inv,
+                col_map.is_equal_vx_vy,
+            ],
         );
-        builder
-            .when(local.is_real)
-            .assert_zero(local.is_equal_vx_vy * diff_vx_vy);
+        is_equal_vx_vy_air.eval(&mut sub_builder);
 
         // program counter
         builder

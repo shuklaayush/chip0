@@ -31,7 +31,7 @@ pub struct IncrementalTrace<Cols: Default> {
 }
 
 #[repr(C)]
-#[derive(Default, Copy, Clone)]
+#[derive(Default, Debug, Copy, Clone)]
 pub struct MemoryEventLike<T> {
     pub clk: T,
     pub address: T,
@@ -100,7 +100,7 @@ impl<F: PrimeField32> PartialMachineTrace<F> {
         }
 
         self.frame_buffer.sort_by_key(|event| event.address);
-        let mut frame_buffer_trace = vec![MemoryCols::default(); self.frame_buffer.len()];
+        let mut frame_buffer_trace = vec![FrameBufferCols::default(); self.frame_buffer.len()];
         for (i, event) in self.frame_buffer.iter().enumerate() {
             frame_buffer_trace[i].addr = event.address;
             frame_buffer_trace[i].clk = event.clk;
@@ -270,7 +270,7 @@ impl<F: PrimeField32> State for StarkState<F> {
 
         let clk = self.clk()?;
         let event = MemoryEventLike {
-            clk: F::from_wrapped_u64(clk),
+            clk: F::from_canonical_u64(clk),
             address: F::from_canonical_u16(addr),
             value: F::from_canonical_u8(value),
             is_read: F::from_bool(true),
@@ -298,7 +298,7 @@ impl<F: PrimeField32> State for StarkState<F> {
         let clk = self.clk()?;
         let addr = y * DISPLAY_WIDTH + x;
         let event = MemoryEventLike {
-            clk: F::from_wrapped_u64(clk),
+            clk: F::from_canonical_u64(clk),
             address: F::from_canonical_usize(addr),
             value: F::from_bool(value),
             is_read: F::from_bool(true),
@@ -312,7 +312,7 @@ impl<F: PrimeField32> State for StarkState<F> {
         let clk = self.clk()?;
         let addr = y * DISPLAY_WIDTH + x;
         let event = MemoryEventLike {
-            clk: F::from_wrapped_u64(clk),
+            clk: F::from_canonical_u64(clk),
             address: F::from_canonical_usize(addr),
             value: F::from_bool(bit),
             is_read: F::from_bool(false),
@@ -367,7 +367,7 @@ impl<F: PrimeField32> State for StarkState<F> {
     fn set_memory(&mut self, addr: Address, value: Word) -> Result<(), Chip8Error> {
         let clk = self.clk()?;
         let event = MemoryEventLike {
-            clk: F::from_wrapped_u64(clk),
+            clk: F::from_canonical_u64(clk),
             address: F::from_canonical_u16(addr),
             value: F::from_canonical_u8(value),
             is_read: F::from_bool(false),
@@ -394,7 +394,7 @@ impl<F: PrimeField32> State for StarkState<F> {
                 if self.state.frame_buffer(y, x)? {
                     let addr = y * DISPLAY_WIDTH + x;
                     let event = MemoryEventLike {
-                        clk: F::from_wrapped_u64(clk),
+                        clk: F::from_canonical_u64(clk),
                         address: F::from_canonical_usize(addr),
                         value: F::from_bool(false),
                         is_read: F::from_bool(false),

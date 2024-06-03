@@ -1,7 +1,7 @@
-use p3_derive::Columns;
+use p3_derive::Columnar;
 
 #[repr(C)]
-#[derive(Columns, Default, Clone)]
+#[derive(Columnar, Default, Clone)]
 pub struct HashCols<T> {
     pub is_real: T,
 }

@@ -5,10 +5,10 @@ pub mod interaction;
 #[cfg(feature = "trace-writer")]
 use p3_air_util::TraceWriter;
 #[cfg(feature = "trace-writer")]
-use p3_field::{ExtensionField, PrimeField32};
+use p3_field::{ExtensionField, Field};
 
 #[cfg(feature = "trace-writer")]
-use self::columns::MemoryStartCols;
+use self::columns::{MemoryStartCols, MemoryStartPreprocessedCols};
 
 #[derive(Clone, Debug)]
 pub struct MemoryStartChip {
@@ -17,7 +17,11 @@ pub struct MemoryStartChip {
 }
 
 #[cfg(feature = "trace-writer")]
-impl<F: PrimeField32, EF: ExtensionField<F>> TraceWriter<F, EF> for MemoryStartChip {
+impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for MemoryStartChip {
+    fn preprocessed_headers(&self) -> Vec<String> {
+        MemoryStartPreprocessedCols::<F>::headers()
+    }
+
     fn headers(&self) -> Vec<String> {
         MemoryStartCols::<F>::headers()
     }

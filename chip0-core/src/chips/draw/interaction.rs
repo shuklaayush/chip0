@@ -31,40 +31,38 @@ impl<F: Field> InteractionAir<F> for DrawChip {
                 count: VirtualPairCol::single_main(col_map.is_first),
                 argument_index: self.bus_draw,
             },
-            // TODO
-            // Interaction {
-            //     fields: vec![
-            //         VirtualPairCol::new_main(
-            //             vec![
-            //                 (col_map.y, F::from_canonical_usize(DISPLAY_WIDTH)),
-            //                 (col_map.x, F::one()),
-            //             ],
-            //             F::zero(),
-            //         ),
-            //         VirtualPairCol::single_main(col_map.clk),
-            //         VirtualPairCol::single_main(col_map.frame_buffer_y_x),
-            //     ],
-            //     count: VirtualPairCol::single_main(col_map.is_real),
-            //     argument_index: self.bus_frame_buffer,
-            // },
-            // Interaction {
-            //     fields: vec![
-            //         VirtualPairCol::new_main(
-            //             vec![
-            //                 (col_map.y, F::from_canonical_usize(DISPLAY_WIDTH)),
-            //                 (col_map.x, F::one()),
-            //             ],
-            //             F::zero(),
-            //         ),
-            //         VirtualPairCol::single_main(col_map.clk),
-            //         VirtualPairCol::new_main(
-            //             vec![(col_map.frame_buffer_y_x, -F::one())],
-            //             F::one(),
-            //         ),
-            //     ],
-            //     count: VirtualPairCol::single_main(col_map.pixel),
-            //     argument_index: self.bus_frame_buffer,
-            // },
+            // Read frame_buffer[y][x] to register
+            Interaction {
+                fields: vec![
+                    VirtualPairCol::new_main(
+                        vec![
+                            (col_map.y, F::from_canonical_usize(DISPLAY_WIDTH)),
+                            (col_map.x, F::one()),
+                        ],
+                        F::zero(),
+                    ),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.frame_buffer_y_x),
+                ],
+                count: VirtualPairCol::single_main(col_map.is_real),
+                argument_index: self.bus_frame_buffer,
+            },
+            // Flip frame_buffer[y][x] if pixel is set
+            Interaction {
+                fields: vec![
+                    VirtualPairCol::new_main(
+                        vec![
+                            (col_map.y, F::from_canonical_usize(DISPLAY_WIDTH)),
+                            (col_map.x, F::one()),
+                        ],
+                        F::zero(),
+                    ),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::new_main(vec![(col_map.frame_buffer_y_x, -F::one())], F::one()),
+                ],
+                count: VirtualPairCol::single_main(col_map.pixel),
+                argument_index: self.bus_frame_buffer,
+            },
             Interaction {
                 fields: vec![
                     VirtualPairCol::sum_main(vec![col_map.index_register, col_map.ys]),

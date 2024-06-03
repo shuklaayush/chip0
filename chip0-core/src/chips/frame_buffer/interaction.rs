@@ -8,18 +8,15 @@ impl<F: Field> InteractionAir<F> for FrameBufferChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         let col_map = FrameBufferCols::<F>::col_map();
         vec![
-            // Interaction {
-            //     fields: vec![
-            //         VirtualPairCol::single_main(col_map.addr),
-            //         VirtualPairCol::single_main(col_map.clk),
-            //         VirtualPairCol::single_main(col_map.value),
-            //     ],
-            //     count: VirtualPairCol::sum_main(vec![
-            //         col_map.is_read,
-            //         col_map.is_write,
-            //     ]),
-            //     argument_index: self.bus_frame_buffer,
-            // },
+            Interaction {
+                fields: vec![
+                    VirtualPairCol::single_main(col_map.addr),
+                    VirtualPairCol::single_main(col_map.clk),
+                    VirtualPairCol::single_main(col_map.value),
+                ],
+                count: VirtualPairCol::sum_main(vec![col_map.is_read, col_map.is_write]),
+                argument_index: self.bus_frame_buffer,
+            },
             Interaction {
                 fields: vec![VirtualPairCol::single_main(col_map.diff_limb_lo)],
                 count: VirtualPairCol::sum_main(vec![col_map.is_read, col_map.is_write]),

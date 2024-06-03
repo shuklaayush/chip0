@@ -47,8 +47,8 @@ impl<AB: AirBuilder> Air<AB> for DrawChip {
             .when(local.is_real)
             .when_ne(local.is_last, AB::Expr::one())
             .assert_eq(
-                next.ys * AB::Expr::from_wrapped_u64(8) + next.xs,
-                local.ys * AB::Expr::from_wrapped_u64(8) + local.xs + AB::Expr::one(),
+                next.ys * AB::Expr::from_canonical_u8(8) + next.xs,
+                local.ys * AB::Expr::from_canonical_u8(8) + local.xs + AB::Expr::one(),
             );
         builder
             .when(local.is_real)
