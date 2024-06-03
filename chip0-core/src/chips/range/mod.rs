@@ -17,7 +17,7 @@ pub struct RangeChip {
 
 #[cfg(feature = "trace-writer")]
 impl<F: PrimeField32, EF: ExtensionField<F>> TraceWriter<F, EF> for RangeChip {
-    fn main_headers(&self) -> Vec<String> {
+    fn headers(&self) -> Vec<String> {
         RangeCols::<F>::headers()
     }
 }

@@ -1,9 +1,13 @@
-use chip8_core::constants::{NUM_KEYS, NUM_REGISTERS, OPCODE_SIZE};
+use chip8_core::constants::{NUM_KEYS, NUM_OPCODES, NUM_REGISTERS, OPCODE_SIZE};
 use core::borrow::Borrow;
 use itertools::Itertools;
 use p3_air::{Air, AirBuilder, BaseAir};
+use p3_air_util::builders::SubAirBuilder;
 use p3_field::AbstractField;
 use p3_matrix::Matrix;
+
+use crate::airs::counter::CounterAir;
+use crate::airs::selector::SelectorAir;
 
 use super::columns::CpuCols;
 use super::CpuChip;
@@ -22,87 +26,62 @@ impl<AB: AirBuilder> Air<AB> for CpuChip {
         let local: &CpuCols<AB::Var> = (*local).borrow();
         let next: &CpuCols<AB::Var> = (*next).borrow();
 
+        let col_map = CpuCols::<AB::Var>::col_map();
+
         // is_real is boolean
         builder.assert_bool(local.is_real);
 
-        // clk increments by 1
-        builder
-            .when_transition()
-            .when(next.is_real)
-            .assert_eq(next.clk, local.clk + AB::Expr::one());
+        // clk
+        // TODO: See if can avoid is_real
+        let counter = CounterAir {};
+        let mut builder_when_next_is_real = builder.when(next.is_real);
+        let mut clk_builder =
+            SubAirBuilder::new_main(&mut builder_when_next_is_real, vec![col_map.clk]);
+        counter.eval(&mut clk_builder);
 
-        // Selectors are boolean
-        builder.assert_bool(local.is_clear_display);
-        builder.assert_bool(local.is_return);
-        builder.assert_bool(local.is_jump);
-        builder.assert_bool(local.is_call);
-        builder.assert_bool(local.is_skip_equal);
-        builder.assert_bool(local.is_skip_not_equal);
-        builder.assert_bool(local.is_skip_equal_xy);
-        builder.assert_bool(local.is_load);
-        builder.assert_bool(local.is_add);
-        builder.assert_bool(local.is_move);
-        builder.assert_bool(local.is_or);
-        builder.assert_bool(local.is_and);
-        builder.assert_bool(local.is_xor);
-        builder.assert_bool(local.is_add_xy);
-        builder.assert_bool(local.is_sub_xy);
-        builder.assert_bool(local.is_shift_right);
-        builder.assert_bool(local.is_sub_yx);
-        builder.assert_bool(local.is_shift_left);
-        builder.assert_bool(local.is_skip_not_equal_xy);
-        builder.assert_bool(local.is_load_i);
-        builder.assert_bool(local.is_jump_v0);
-        builder.assert_bool(local.is_random);
-        builder.assert_bool(local.is_draw);
-        builder.assert_bool(local.is_skip_key_pressed);
-        builder.assert_bool(local.is_skip_key_not_pressed);
-        builder.assert_bool(local.is_load_delay);
-        builder.assert_bool(local.is_wait_key_press);
-        builder.assert_bool(local.is_set_delay);
-        builder.assert_bool(local.is_set_sound);
-        builder.assert_bool(local.is_add_i);
-        builder.assert_bool(local.is_load_font);
-        builder.assert_bool(local.is_store_bcd);
-        builder.assert_bool(local.is_store_registers);
-        builder.assert_bool(local.is_load_memory);
-
-        // Only one selector is active
-        let selectors_sum = local.is_clear_display
-            + local.is_return
-            + local.is_jump
-            + local.is_call
-            + local.is_skip_equal
-            + local.is_skip_not_equal
-            + local.is_skip_equal_xy
-            + local.is_load
-            + local.is_add
-            + local.is_move
-            + local.is_or
-            + local.is_and
-            + local.is_xor
-            + local.is_add_xy
-            + local.is_sub_xy
-            + local.is_shift_right
-            + local.is_sub_yx
-            + local.is_shift_left
-            + local.is_skip_not_equal_xy
-            + local.is_load_i
-            + local.is_jump_v0
-            + local.is_random
-            + local.is_draw
-            + local.is_skip_key_pressed
-            + local.is_skip_key_not_pressed
-            + local.is_load_delay
-            + local.is_wait_key_press
-            + local.is_set_delay
-            + local.is_set_sound
-            + local.is_add_i
-            + local.is_load_font
-            + local.is_store_bcd
-            + local.is_store_registers
-            + local.is_load_memory;
-        builder.when(local.is_real).assert_one(selectors_sum);
+        // Opcode selectors
+        let selector = SelectorAir::<NUM_OPCODES> {};
+        let mut builder_when_local_is_real = builder.when(local.is_real);
+        let mut selector_builder = SubAirBuilder::new_main(
+            &mut builder_when_local_is_real,
+            vec![
+                col_map.is_clear_display,
+                col_map.is_return,
+                col_map.is_jump,
+                col_map.is_call,
+                col_map.is_skip_equal,
+                col_map.is_skip_not_equal,
+                col_map.is_skip_equal_xy,
+                col_map.is_load,
+                col_map.is_add,
+                col_map.is_move,
+                col_map.is_or,
+                col_map.is_and,
+                col_map.is_xor,
+                col_map.is_add_xy,
+                col_map.is_sub_xy,
+                col_map.is_shift_right,
+                col_map.is_sub_yx,
+                col_map.is_shift_left,
+                col_map.is_skip_not_equal_xy,
+                col_map.is_load_i,
+                col_map.is_jump_v0,
+                col_map.is_random,
+                col_map.is_draw,
+                col_map.is_skip_key_pressed,
+                col_map.is_skip_key_not_pressed,
+                col_map.is_load_delay,
+                col_map.is_wait_key_press,
+                col_map.is_set_delay,
+                col_map.is_set_sound,
+                col_map.is_add_i,
+                col_map.is_load_font,
+                col_map.is_store_bcd,
+                col_map.is_store_registers,
+                col_map.is_load_memory,
+            ],
+        );
+        selector.eval(&mut selector_builder);
 
         // register selectors
         for i in 0..NUM_REGISTERS {

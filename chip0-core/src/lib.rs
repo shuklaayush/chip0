@@ -1,3 +1,4 @@
+pub mod airs;
 pub mod chips;
 pub mod config;
 pub mod cpu;

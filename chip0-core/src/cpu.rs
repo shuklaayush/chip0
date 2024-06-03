@@ -375,12 +375,18 @@ where
 
     async fn run(
         &mut self,
+        num_cycles: Option<u64>,
         status: Arc<RwLock<Result<(), Chip8Error>>>,
         input_queue: Arc<RwLock<VecDeque<(u64, InputEvent)>>>,
     ) {
         // let mut prover_handle = None;
         run_loop(status.clone(), self.frequency(), |_| {
             let clk = self.state().clk()?;
+            if let Some(num_cycles) = num_cycles {
+                if clk >= num_cycles {
+                    return Err(Chip8Error::Terminated);
+                }
+            }
 
             let curr_row = &mut self.state().trace.cpu.curr_row;
             if clk == 0 {

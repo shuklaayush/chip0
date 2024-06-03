@@ -113,4 +113,6 @@ pub const FONTSET: [u8; NUM_FONTS * FONT_SIZE] = [
     0b10000000, // █
 ];
 
+pub const NUM_OPCODES: usize = 34;
+
 pub const TICKS_PER_TIMER: u64 = 8;
