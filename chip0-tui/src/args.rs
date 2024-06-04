@@ -22,7 +22,7 @@ pub struct CmdArgs {
     #[arg(long)]
     pub random_seed: Option<u64>,
 
-    #[arg(long = "input")]
+    #[arg(long = "inputs")]
     pub input_file: Option<PathBuf>,
 
     #[arg(long, default_value_t = false, requires = "input_file")]

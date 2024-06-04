@@ -19,7 +19,7 @@ pub struct MemoryChip {
 
 #[cfg(feature = "trace-writer")]
 impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for MemoryChip {
-    fn headers(&self) -> Vec<String> {
+    fn main_headers(&self) -> Vec<String> {
         MemoryCols::<F>::headers()
     }
 }

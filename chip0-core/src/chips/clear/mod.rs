@@ -18,7 +18,7 @@ pub struct ClearChip {
 
 #[cfg(feature = "trace-writer")]
 impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for ClearChip {
-    fn headers(&self) -> Vec<String> {
+    fn main_headers(&self) -> Vec<String> {
         ClearCols::<F>::headers()
     }
 }

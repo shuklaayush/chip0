@@ -18,7 +18,7 @@ pub struct FrameBufferChip {
 
 #[cfg(feature = "trace-writer")]
 impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for FrameBufferChip {
-    fn headers(&self) -> Vec<String> {
+    fn main_headers(&self) -> Vec<String> {
         FrameBufferCols::<F>::headers()
     }
 }

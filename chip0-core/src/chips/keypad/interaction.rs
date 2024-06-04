@@ -1,12 +1,16 @@
 use p3_air::VirtualPairCol;
 use p3_field::Field;
-use p3_interaction::{Interaction, InteractionAir, InteractionAirBuilder, Rap};
+use p3_interaction::{BaseInteractionAir, Interaction, InteractionAir, InteractionAirBuilder, Rap};
 
 use super::{columns::KeypadCols, KeypadChip};
 
-impl<F: Field> InteractionAir<F> for KeypadChip {
-    fn sends(&self) -> Vec<Interaction<F>> {
-        let col_map = KeypadCols::<F>::col_map();
+impl<F: Field> BaseInteractionAir<F> for KeypadChip {
+    fn sends_from_indices(
+        &self,
+        _preprocessed_indices: &[usize],
+        main_indices: &[usize],
+    ) -> Vec<Interaction<F>> {
+        let col_map = KeypadCols::from_usize_slice(main_indices);
         vec![
             // Interaction {
             //     fields: vec![
@@ -19,9 +23,12 @@ impl<F: Field> InteractionAir<F> for KeypadChip {
             // }
         ]
     }
+}
 
-    fn receives(&self) -> Vec<Interaction<F>> {
-        vec![]
+impl<F: Field> InteractionAir<F> for KeypadChip {
+    fn sends(&self) -> Vec<Interaction<F>> {
+        let col_map = KeypadCols::<F>::col_map();
+        self.sends_from_main_indices(col_map.as_usize_slice())
     }
 }
 

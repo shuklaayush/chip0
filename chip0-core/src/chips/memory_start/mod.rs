@@ -22,7 +22,7 @@ impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for MemoryStartChip {
         MemoryStartPreprocessedCols::<F>::headers()
     }
 
-    fn headers(&self) -> Vec<String> {
+    fn main_headers(&self) -> Vec<String> {
         MemoryStartCols::<F>::headers()
     }
 }

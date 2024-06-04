@@ -19,7 +19,7 @@ pub struct DrawChip {
 
 #[cfg(feature = "trace-writer")]
 impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for DrawChip {
-    fn headers(&self) -> Vec<String> {
+    fn main_headers(&self) -> Vec<String> {
         DrawCols::<F>::headers()
     }
 }

@@ -15,7 +15,7 @@ pub struct HashChip {}
 
 impl<F: Field, EF: ExtensionField<F>> TraceWriter<F, EF> for HashChip {
     #[cfg(feature = "trace-writer")]
-    fn headers(&self) -> Vec<String> {
+    fn main_headers(&self) -> Vec<String> {
         HashCols::<F>::headers()
     }
 }
