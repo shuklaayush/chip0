@@ -31,40 +31,34 @@ where
     type Bus = Chip0MachineBus;
 
     fn chips(&self) -> Vec<Chip0MachineChip> {
-        let cpu_chip = CpuChip {
-            bus_clear: Chip0MachineBus::ClearBus as usize,
-            bus_draw: Chip0MachineBus::DrawBus as usize,
-            bus_memory: Chip0MachineBus::MemoryBus as usize,
-            bus_keypad: Chip0MachineBus::KeypadBus as usize,
-        };
-        let clear_chip = ClearChip {
-            bus_clear: Chip0MachineBus::ClearBus as usize,
-            bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
-        };
-        let draw_chip = DrawChip {
-            bus_draw: Chip0MachineBus::DrawBus as usize,
-            bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
-            bus_memory: Chip0MachineBus::MemoryBus as usize,
-        };
-        let keypad_chip = KeypadChip {
-            bus_keypad: Chip0MachineBus::KeypadBus as usize,
-        };
-        let memory_chip = MemoryChip {
-            bus_memory_start: Chip0MachineBus::MemoryStartBus as usize,
-            bus_memory: Chip0MachineBus::MemoryBus as usize,
-            bus_range: Chip0MachineBus::RangeBus as usize,
-        };
-        let frame_buffer_chip = FrameBufferChip {
-            bus_frame_buffer: Chip0MachineBus::FrameBufferBus as usize,
-            bus_range: Chip0MachineBus::RangeBus as usize,
-        };
-        let range_chip = RangeChip {
-            bus_range: Chip0MachineBus::RangeBus as usize,
-        };
-        let memory_start_chip = MemoryStartChip {
-            rom: self.rom.clone(),
-            bus_memory_start: Chip0MachineBus::MemoryStartBus as usize,
-        };
+        let cpu_chip = CpuChip::new(
+            Chip0MachineBus::ClearBus as usize,
+            Chip0MachineBus::DrawBus as usize,
+            Chip0MachineBus::MemoryBus as usize,
+            Chip0MachineBus::KeypadBus as usize,
+        );
+        let clear_chip = ClearChip::new(
+            Chip0MachineBus::ClearBus as usize,
+            Chip0MachineBus::FrameBufferBus as usize,
+        );
+        let draw_chip = DrawChip::new(
+            Chip0MachineBus::DrawBus as usize,
+            Chip0MachineBus::FrameBufferBus as usize,
+            Chip0MachineBus::MemoryBus as usize,
+        );
+        let keypad_chip = KeypadChip::new(Chip0MachineBus::KeypadBus as usize);
+        let memory_chip = MemoryChip::new(
+            Chip0MachineBus::MemoryStartBus as usize,
+            Chip0MachineBus::MemoryBus as usize,
+            Chip0MachineBus::RangeBus as usize,
+        );
+        let frame_buffer_chip = FrameBufferChip::new(
+            Chip0MachineBus::FrameBufferBus as usize,
+            Chip0MachineBus::RangeBus as usize,
+        );
+        let range_chip = RangeChip::new(Chip0MachineBus::RangeBus as usize);
+        let memory_start_chip =
+            MemoryStartChip::new(self.rom.clone(), Chip0MachineBus::MemoryStartBus as usize);
 
         vec![
             Chip0MachineChip::Cpu(cpu_chip),

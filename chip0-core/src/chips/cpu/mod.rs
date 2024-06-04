@@ -12,10 +12,21 @@ use self::columns::CpuCols;
 
 #[derive(Clone, Debug)]
 pub struct CpuChip {
-    pub bus_clear: usize,
-    pub bus_draw: usize,
-    pub bus_memory: usize,
-    pub bus_keypad: usize,
+    bus_clear: usize,
+    bus_draw: usize,
+    bus_memory: usize,
+    bus_keypad: usize,
+}
+
+impl CpuChip {
+    pub fn new(bus_clear: usize, bus_draw: usize, bus_memory: usize, bus_keypad: usize) -> Self {
+        Self {
+            bus_clear,
+            bus_draw,
+            bus_memory,
+            bus_keypad,
+        }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

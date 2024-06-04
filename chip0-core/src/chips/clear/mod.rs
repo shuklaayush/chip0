@@ -12,8 +12,17 @@ use self::columns::ClearCols;
 
 #[derive(Clone, Debug)]
 pub struct ClearChip {
-    pub bus_clear: usize,
-    pub bus_frame_buffer: usize,
+    bus_clear: usize,
+    bus_frame_buffer: usize,
+}
+
+impl ClearChip {
+    pub fn new(bus_clear: usize, bus_frame_buffer: usize) -> Self {
+        Self {
+            bus_clear,
+            bus_frame_buffer,
+        }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

@@ -12,8 +12,17 @@ use self::columns::FrameBufferCols;
 
 #[derive(Clone, Debug)]
 pub struct FrameBufferChip {
-    pub bus_frame_buffer: usize,
-    pub bus_range: usize,
+    bus_frame_buffer: usize,
+    bus_range: usize,
+}
+
+impl FrameBufferChip {
+    pub fn new(bus_frame_buffer: usize, bus_range: usize) -> Self {
+        Self {
+            bus_frame_buffer,
+            bus_range,
+        }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

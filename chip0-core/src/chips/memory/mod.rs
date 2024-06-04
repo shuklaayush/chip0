@@ -12,9 +12,19 @@ use self::columns::MemoryCols;
 
 #[derive(Clone, Debug)]
 pub struct MemoryChip {
-    pub bus_memory_start: usize,
-    pub bus_memory: usize,
-    pub bus_range: usize,
+    bus_memory_start: usize,
+    bus_memory: usize,
+    bus_range: usize,
+}
+
+impl MemoryChip {
+    pub fn new(bus_memory_start: usize, bus_memory: usize, bus_range: usize) -> Self {
+        Self {
+            bus_memory_start,
+            bus_memory,
+            bus_range,
+        }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

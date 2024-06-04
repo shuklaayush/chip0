@@ -12,7 +12,13 @@ use self::columns::KeypadCols;
 
 #[derive(Clone, Debug)]
 pub struct KeypadChip {
-    pub bus_keypad: usize,
+    bus_keypad: usize,
+}
+
+impl KeypadChip {
+    pub fn new(bus_keypad: usize) -> Self {
+        Self { bus_keypad }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

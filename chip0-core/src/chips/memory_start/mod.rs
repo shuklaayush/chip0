@@ -12,8 +12,17 @@ use self::columns::{MemoryStartCols, MemoryStartPreprocessedCols};
 
 #[derive(Clone, Debug)]
 pub struct MemoryStartChip {
-    pub rom: Vec<u8>,
-    pub bus_memory_start: usize,
+    rom: Vec<u8>,
+    bus_memory_start: usize,
+}
+
+impl MemoryStartChip {
+    pub fn new(rom: Vec<u8>, bus_memory_start: usize) -> Self {
+        Self {
+            rom,
+            bus_memory_start,
+        }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

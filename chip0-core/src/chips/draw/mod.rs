@@ -12,9 +12,19 @@ use self::columns::DrawCols;
 
 #[derive(Clone, Debug)]
 pub struct DrawChip {
-    pub bus_draw: usize,
-    pub bus_frame_buffer: usize,
-    pub bus_memory: usize,
+    bus_draw: usize,
+    bus_frame_buffer: usize,
+    bus_memory: usize,
+}
+
+impl DrawChip {
+    pub fn new(bus_draw: usize, bus_frame_buffer: usize, bus_memory: usize) -> Self {
+        Self {
+            bus_draw,
+            bus_frame_buffer,
+            bus_memory,
+        }
+    }
 }
 
 #[cfg(feature = "trace-writer")]

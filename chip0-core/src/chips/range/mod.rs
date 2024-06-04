@@ -12,7 +12,13 @@ use self::columns::RangeCols;
 
 #[derive(Clone, Debug)]
 pub struct RangeChip {
-    pub bus_range: usize,
+    bus_range: usize,
+}
+
+impl RangeChip {
+    pub fn new(bus_range: usize) -> Self {
+        Self { bus_range }
+    }
 }
 
 #[cfg(feature = "trace-writer")]
