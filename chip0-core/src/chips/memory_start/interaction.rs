@@ -13,9 +13,8 @@ impl<F: Field> BaseInteractionAir<F> for MemoryStartChip {
         preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let preprocessed_col_map =
-            MemoryStartPreprocessedCols::from_usize_slice(preprocessed_indices);
-        let col_map = MemoryStartCols::from_usize_slice(main_indices);
+        let preprocessed_col_map = MemoryStartPreprocessedCols::from_slice(preprocessed_indices);
+        let col_map = MemoryStartCols::from_slice(main_indices);
         vec![Interaction {
             fields: vec![
                 VirtualPairCol::single_preprocessed(preprocessed_col_map.addr),
@@ -32,10 +31,7 @@ impl<F: Field> InteractionAir<F> for MemoryStartChip {
         let preprocessed_col_map = MemoryStartPreprocessedCols::<F>::col_map();
         let main_col_map = MemoryStartCols::<F>::col_map();
 
-        self.sends_from_indices(
-            preprocessed_col_map.as_usize_slice(),
-            main_col_map.as_usize_slice(),
-        )
+        self.sends_from_indices(preprocessed_col_map.as_slice(), main_col_map.as_slice())
     }
 }
 

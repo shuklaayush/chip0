@@ -10,7 +10,7 @@ impl<F: Field> BaseInteractionAir<F> for RangeChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = RangeCols::from_usize_slice(main_indices);
+        let col_map = RangeCols::from_slice(main_indices);
         vec![Interaction {
             fields: vec![VirtualPairCol::single_main(col_map.value)],
             count: VirtualPairCol::single_main(col_map.mult),
@@ -22,7 +22,7 @@ impl<F: Field> BaseInteractionAir<F> for RangeChip {
 impl<F: Field> InteractionAir<F> for RangeChip {
     fn receives(&self) -> Vec<Interaction<F>> {
         let col_map = RangeCols::<F>::col_map();
-        self.receives_from_main_indices(col_map.as_usize_slice())
+        self.receives_from_main_indices(col_map.as_slice())
     }
 }
 

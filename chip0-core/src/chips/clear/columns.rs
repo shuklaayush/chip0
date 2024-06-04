@@ -5,7 +5,7 @@ use p3_derive::Columnar;
 #[derive(Columnar, Default, Clone)]
 pub struct ClearCols<T> {
     pub is_real: T,
-    pub is_start: T,
     pub clk: T,
+    pub is_start: T,
     pub addr: T,
 }

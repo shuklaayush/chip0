@@ -10,7 +10,7 @@ impl<F: Field> BaseInteractionAir<F> for KeypadChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = KeypadCols::from_usize_slice(main_indices);
+        let col_map = KeypadCols::from_slice(main_indices);
         vec![
             // Interaction {
             //     fields: vec![
@@ -28,7 +28,7 @@ impl<F: Field> BaseInteractionAir<F> for KeypadChip {
 impl<F: Field> InteractionAir<F> for KeypadChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         let col_map = KeypadCols::<F>::col_map();
-        self.sends_from_main_indices(col_map.as_usize_slice())
+        self.sends_from_main_indices(col_map.as_slice())
     }
 }
 

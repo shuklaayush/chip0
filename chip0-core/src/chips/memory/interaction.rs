@@ -10,7 +10,7 @@ impl<F: Field> BaseInteractionAir<F> for MemoryChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = MemoryCols::from_usize_slice(main_indices);
+        let col_map = MemoryCols::from_slice(main_indices);
         vec![Interaction {
             fields: vec![
                 VirtualPairCol::single_main(col_map.addr),
@@ -26,7 +26,7 @@ impl<F: Field> BaseInteractionAir<F> for MemoryChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = MemoryCols::from_usize_slice(main_indices);
+        let col_map = MemoryCols::from_slice(main_indices);
         vec![
             Interaction {
                 fields: vec![
@@ -54,12 +54,12 @@ impl<F: Field> BaseInteractionAir<F> for MemoryChip {
 impl<F: Field> InteractionAir<F> for MemoryChip {
     fn receives(&self) -> Vec<Interaction<F>> {
         let col_map = MemoryCols::<F>::col_map();
-        self.receives_from_main_indices(col_map.as_usize_slice())
+        self.receives_from_main_indices(col_map.as_slice())
     }
 
     fn sends(&self) -> Vec<Interaction<F>> {
         let col_map = MemoryCols::<F>::col_map();
-        self.sends_from_main_indices(col_map.as_usize_slice())
+        self.sends_from_main_indices(col_map.as_slice())
     }
 }
 

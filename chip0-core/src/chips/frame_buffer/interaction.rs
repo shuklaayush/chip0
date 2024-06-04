@@ -10,7 +10,7 @@ impl<F: Field> BaseInteractionAir<F> for FrameBufferChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = FrameBufferCols::from_usize_slice(main_indices);
+        let col_map = FrameBufferCols::from_slice(main_indices);
         vec![
             Interaction {
                 fields: vec![
@@ -38,7 +38,7 @@ impl<F: Field> BaseInteractionAir<F> for FrameBufferChip {
 impl<F: Field> InteractionAir<F> for FrameBufferChip {
     fn sends(&self) -> Vec<Interaction<F>> {
         let col_map = FrameBufferCols::<F>::col_map();
-        self.sends_from_main_indices(col_map.as_usize_slice())
+        self.sends_from_main_indices(col_map.as_slice())
     }
 }
 

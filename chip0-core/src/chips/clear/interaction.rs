@@ -10,7 +10,7 @@ impl<F: Field> BaseInteractionAir<F> for ClearChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = ClearCols::from_usize_slice(main_indices);
+        let col_map = ClearCols::from_slice(main_indices);
         vec![
             Interaction {
                 fields: vec![VirtualPairCol::single_main(col_map.clk)],
@@ -33,7 +33,7 @@ impl<F: Field> BaseInteractionAir<F> for ClearChip {
 impl<F: Field> InteractionAir<F> for ClearChip {
     fn receives(&self) -> Vec<Interaction<F>> {
         let col_map = ClearCols::<F>::col_map();
-        self.receives_from_main_indices(col_map.as_usize_slice())
+        self.receives_from_main_indices(col_map.as_slice())
     }
 }
 

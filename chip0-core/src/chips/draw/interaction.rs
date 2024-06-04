@@ -11,7 +11,7 @@ impl<F: Field> BaseInteractionAir<F> for DrawChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = DrawCols::from_usize_slice(main_indices);
+        let col_map = DrawCols::from_slice(main_indices);
         vec![
             Interaction {
                 fields: vec![
@@ -72,7 +72,7 @@ impl<F: Field> BaseInteractionAir<F> for DrawChip {
         _preprocessed_indices: &[usize],
         main_indices: &[usize],
     ) -> Vec<Interaction<F>> {
-        let col_map = DrawCols::from_usize_slice(main_indices);
+        let col_map = DrawCols::from_slice(main_indices);
         vec![Interaction {
             fields: vec![
                 VirtualPairCol::single_main(col_map.clk),
@@ -87,12 +87,12 @@ impl<F: Field> BaseInteractionAir<F> for DrawChip {
 impl<F: Field> InteractionAir<F> for DrawChip {
     fn receives(&self) -> Vec<Interaction<F>> {
         let col_map = DrawCols::<F>::col_map();
-        self.receives_from_main_indices(col_map.as_usize_slice())
+        self.receives_from_main_indices(col_map.as_slice())
     }
 
     fn sends(&self) -> Vec<Interaction<F>> {
         let col_map = DrawCols::<F>::col_map();
-        self.sends_from_main_indices(col_map.as_usize_slice())
+        self.sends_from_main_indices(col_map.as_slice())
     }
 }
 
